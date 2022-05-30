@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/htwong/Desktop/Code/manim-2022/learn/media/videos/learn_graph/1080p60/partial_movie_files/DFS_Tree_Scene/2724823860_470555361_223132457.mp4'
+file 'file:/Users/htwong/Desktop/Code/manim-2022/learn/media/videos/learn_graph/1080p60/partial_movie_files/DFS_Tree_Scene/1164547788_3503346753_1272956925.mp4'
+file 'file:/Users/htwong/Desktop/Code/manim-2022/learn/media/videos/learn_graph/1080p60/partial_movie_files/DFS_Tree_Scene/1164547788_2646541686_230770454.mp4'
