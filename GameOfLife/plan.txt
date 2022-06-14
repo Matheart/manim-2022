@@ -1,0 +1,8 @@
+接下来几集会更详细的介绍：
+2. Still Life
+3. Oscillator
+4. Spaceship
+5. 艰难的探索过程
+6. 其他种类的生命游戏介绍
+
+Circuitry and logic, computer construction太深了可能就不讲了，观众自行阅读
