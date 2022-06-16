@@ -14,15 +14,44 @@
 当一个活的细胞周围有两个或者三个细胞时下一代它会继续生存，意味着少于两个或者多于三个它下一步会死亡，这很自然的模拟了大自然中周围细胞过少或者过于拥挤导致死亡的现象。
 
 为方便展示，我们把死去的方格标为浅蓝色
-根据这个规则，整个网格一步步的迭代，正如现实生命中的演化一样，
-只不过自然世界中的时间是连续的，这个游戏中所谓的时间是离散的，网格的初始状态被称为第一代，迭代了n次后被称为第n代（generation）
-生命游戏里有很多好玩的结构，归纳起来有三种常见的结构，静物，振荡器，和宇宙飞船的性质
-静物指在每一步的迭代中一直保持不变，振荡器表示它的变化具有周期性，在固定的周期后会变回原样，宇宙飞船与振荡器类似，但不会停留在原地，而是会移动
+根据这个规则，正如现实生命中的演化一样，整个网格一步步的迭代，
+初始状态第一代，迭代了n次后被称为第n代（generation）
+生命游戏里有很多好玩的结构，归纳起来有三种常见的结构，静物，振荡器，和飞船的性质（记得包含英文原词）
+静物指在每一步的迭代中一直保持不变，振荡器表示它的变化具有周期性，在固定的周期后会变回原样，飞船与振荡器类似，但不会停留在原地，而是会移动
 
-我们会在接下来的几集会更加详细的介绍以上结构的性质（BulletedList），而这期我们会介绍静物的性质，那，让我们开始吧！
+我们会在接下来的几集会更加详细的介绍以上结构的性质（BulletedList），而这期我们会介绍静物，那，让我们开始吧！
 （1min30s)
 
-本集内容：(4min30s)
-在上期视频中我们已经列举了几个有趣的静物，那么你自然会好奇
+本集内容：(6min30s)
+（要讲constellation吗？）
+大纲：
+======== 静物的分类 ==============
+2. 在上一期我们列举了几个静物，好奇当有1，2，3，4，...个细胞的时候，分别会有几个静物
+3. 到8个的时候，我们能摆两个方块，随便摆放任何位置都可以，那就有无限种可能，引入strict still life的概念
+4. 画出35页那个table
+4. 考虑一些特殊情况如bakery, blockade and fleet ，相比于strict still life，还有一个更宽松的概念叫pseudo life
+5. 引入quasi still life
+======== 静物的构造 ==============
+1. 最简单的静物构造方法 - figure 2.6, 2.7，记法：long, long long, long long long ..., long^n, with tail etc.
+Remark: boat with tail有cis, trans的记法，类似于化学里的
+2. 构造大的静物：
+不可能过厚，所以只有single-cell-thick path，需要加一点extra junk去suppress周围方格诞生生命（被称为stabilize）
+induction coil: stabilize edge
+======= 静物的密度 =============
 
-下集预告：(30s)
+======== Eater 吞噬者 ===========
+感觉和静物关系不大
+1. 很多都是创建，移动，删除glider，可以通过吞噬者
+keyword: recovery time
+eater 1, eater 2, eater 5以及各自适用场合，
+Rock
+======== Welded and constrained still lifes =====
+感觉更像是welded eater hmmmm ...
+
+extended concept:
+Siamese, bridge, tie, weld
+
+Appendix：
+推荐资源
+https://conwaylife.com/wiki/
+Conway's game of life -- Mathematics and construction
