@@ -35,6 +35,8 @@ def expand_rle(rle):
     xv, yv = header.split(',')[:2]
     x = int(xv.partition('=')[2])
     y = int(yv.partition('=')[2])
+    print(x)
+    print(y)
     pattern = np.zeros((x, y))
     body = ''.join(lines[1:])
     body = body[:body.index('!')].lower() # '!' terminates the body

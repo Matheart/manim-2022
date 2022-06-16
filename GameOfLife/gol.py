@@ -35,11 +35,12 @@ class CellBoard(VGroup):
         
         # this custom_buff may be changed if the visual effect is not satisfactory
         #custom_buff = 0
+        
         if dimension[0] * dimension[1] < 100:
             custom_buff = side_length / 5.0
         else: #dimension[0] * dimension[1] <= 225:
             custom_buff = side_length / 4.0
-
+        
         # height, width
         self.arrange_in_grid(self.dimension[0], self.dimension[1], buff = custom_buff)
 
@@ -71,20 +72,22 @@ class CellBoard(VGroup):
         -1 means there existed dead cell be4
         """
         self.board_arr = arr
-        print(self.board_arr)
+
         for i in range(arr.shape[0]):
             for j in range(arr.shape[1]):
                 if arr[i][j] == 0:
-                    self.get_cell(i + 1, j + 1).set_color(self.empty_color)
+                    self.get_cell(i + 1, j + 1).set_color(self.empty_color).set_style(fill_color = self.empty_color)
                 elif arr[i][j] == 1:
-                    self.get_cell(i + 1, j + 1).set_color(self.live_color)
+                    self.get_cell(i + 1, j + 1).set_color(self.live_color).set_style(fill_color = self.live_color)
                 elif arr[i][j] == -1:
-                    self.get_cell(i + 1, j + 1).set_color(self.dead_color)
+                    self.get_cell(i + 1, j + 1).set_color(self.dead_color).set_style(fill_color = self.dead_color)
 
     def set_stageboard_by_rle(self, file_path):
         """
         Purpose: configure the setting of the board using rtf file
         @param file_path The path to the rle file
+
+        Reminders: x is the width and y is the height
         """
         self.set_stageboard( expand_rle(file_path) )
 
@@ -99,6 +102,7 @@ class CellBoard(VGroup):
         directions = np.array([UP, UL, LEFT, DL, DOWN, DR, RIGHT, UR])
         for direction in directions:
             des = loc + direction
+            #print(des)
             if des[0] < 0 or des[0] >= self.dimension[0]:
                 continue
             if des[1] < 0 or des[1] >= self.dimension[1]:
@@ -107,7 +111,8 @@ class CellBoard(VGroup):
             dy = int(des[1])
             if self.board_arr[dx][dy] == 1:
                 cnt += 1
-        return cnt
+
+        return int(cnt)
 
     def next_status(self, x, y, cnt):
         """
@@ -118,28 +123,38 @@ class CellBoard(VGroup):
         Birth, Survival = self.rule.split('/')
         Birth = Birth[1:]
         Survival = Survival[1:]
+        """
+        print("############")
+        print(Birth)
+        print(Survival)
+        print(cnt)
+        print("###########")
+        """
 
         if self.board_arr[x][y] == 1: # live
             if str(cnt) not in Survival:
-                self.board_arr[x][y] = 0
-                self.get_cell(x + 1, y + 1).set_color(self.dead_color)
+                self.board_arr[x][y] = -1
+                self.get_cell(x + 1, y + 1).set_color(self.dead_color).set_style(fill_color = self.dead_color)
         else: # otherwise
             if str(cnt) in Birth:
                 self.board_arr[x][y] = 1
-                self.get_cell(x + 1, y + 1).set_color(self.live_color)
+                self.get_cell(x + 1, y + 1).set_color(self.live_color).set_style(fill_color = self.live_color)
 
     def step(self):
+        #print(np.count_nonzero(self.board_arr == 1))
         """
         Purpose: simulate the next step based on the rule
         """
-        cnt_arr = np.zeros(self.board_arr.shape)
+        cnt_arr = np.zeros(self.board_arr.shape, dtype = "int64")
         for x in range(self.board_arr.shape[0]):
             for y in range(self.board_arr.shape[1]):
                 cnt_arr[x][y] = self.count_live_neighbour(x, y)
-        print("cnt_arr")
-        print(cnt_arr)
-        print()
+
+                #print(cnt_arr[x][y])
+        #print(np.count_nonzero(cnt_arr == 1))
 
         for x in range(self.board_arr.shape[0]):
             for y in range(self.board_arr.shape[1]):
                 self.next_status(x, y, cnt_arr[x][y])
+        
+        #self.set_stageboard(self.board_arr)
