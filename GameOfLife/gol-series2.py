@@ -7,6 +7,10 @@ class MyText(Text):
     def __init__(self, text: str, font: str = "FZYanSongS-R-GB",  **kwargs):
         super().__init__(text = text, font = font, **kwargs)
 
+class EngText(Text):
+    def __init__(self, text: str, font: str = "Georgia",  **kwargs):
+        super().__init__(text = text, font = font, **kwargs)
+
 class bgRec(BackgroundRectangle):
     def __init__(self, mobject, **kwargs):
         super().__init__(
@@ -50,7 +54,7 @@ class FamousVersion(Scene):
             FadeIn(conway, shift = RIGHT),
             FadeIn(magazine, shift = LEFT)
         )
-        conwayName = MyText("John Conway").scale(0.5).next_to(conway, DOWN)
+        conwayName = EngText("John Conway").next_to(conway, DOWN)
         conwayGame = MyText("康威生命游戏").scale(1.25).to_edge(UP)
 
         self.play(
@@ -280,10 +284,10 @@ class ConstructSimple(Scene):
         boat2.align_to(boat4, DOWN)
         boat3.align_to(boat4, DOWN)
 
-        boat1_text = MyText("boat").scale(0.65).next_to(boat1, DOWN)
-        boat2_text = MyText("long boat").scale(0.65).next_to(boat2, DOWN)
-        boat3_text = MyText("long long boat").scale(0.65).next_to(boat3, DOWN)
-        boat4_text = MyText("long^3 boat").scale(0.65).next_to(boat4, DOWN)
+        boat1_text = EngText("boat").scale(0.65).next_to(boat1, DOWN)
+        boat2_text = EngText("long boat").scale(0.65).next_to(boat2, DOWN)
+        boat3_text = EngText("long long boat").scale(0.65).next_to(boat3, DOWN)
+        boat4_text = EngText("long^3 boat").scale(0.65).next_to(boat4, DOWN)
 
         self.add(boat1, boat1_text)
         self.wait(2)
@@ -368,11 +372,13 @@ class ConstructSimple(Scene):
         snake_dot.align_to(snake4, DOWN)
         snake_vg.shift(0.1 * DOWN)
 
-        snake1_text = MyText("snake").scale(0.65).next_to(snake1, DOWN)
-        snake2_text = MyText("long snake").scale(0.65).next_to(snake2, DOWN)
-        snake3_text = MyText("long long snake").scale(0.65).next_to(snake3, DOWN)
-        snake4_text = MyText("long^n snake").scale(0.65).next_to(snake4, DOWN)
-
+        snake1_text = EngText("snake").scale(0.65).next_to(snake1, DOWN)
+        snake2_text = EngText("long snake").scale(0.65).next_to(snake2, DOWN)
+        snake3_text = EngText("long long snake").scale(0.65).next_to(snake3, DOWN)
+        snake4_text = EngText("long^n snake").scale(0.65).next_to(snake4, DOWN)
+        snake4_text2 = EngText("very^(n-1) long snake", color = GOLD_C).scale(0.65).next_to(snake4, DOWN)
+        snake4_text3 = EngText("extra^(n-2) long snake", color = YELLOW_E).scale(0.65).next_to(snake4, DOWN)
+        
         self.wait(2)
         self.play(Create(snake_vg))
         self.play(
@@ -388,3 +394,116 @@ class ConstructSimple(Scene):
         self.wait(1)
         self.play(Wiggle(snake4_text))
         self.wait(2)
+        self.play(
+            FadeOut(snake4_text, shift = UP),
+            FadeIn(snake4_text2, shift = UP),
+        )
+        self.wait(1)
+        self.play(
+            FadeOut(snake4_text2, shift = UP),
+            FadeIn(snake4_text3, shift = UP),
+        )
+        self.wait(2) 
+
+class EquivNotation(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        snake3 = CellBoard(
+            side_length = 0.4, 
+            dimension = (5, 7)
+        ).scale(1.5)
+        snake3.set_stageboard(
+            expand_rle("assets/long3snake.rle")
+        )
+
+        text1 = EngText("long^3 snake").scale(1.2).next_to(snake3, DOWN)
+        text2 = EngText("very very long snake").scale(1.2).next_to(snake3, DOWN)
+        text3 = EngText("extra long snake").scale(1.2).next_to(snake3, DOWN)
+
+        self.add(snake3, text1)
+
+        self.wait(1)
+        self.play(ReplacementTransform(text1, text2))
+        self.wait(1)
+        self.play(ReplacementTransform(text2, text3)) 
+        self.wait(3)       
+
+class StillBlock(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        block = CellBoard(
+            dimension = (4, 4)
+        )
+        arr = np.zeros((4, 4))
+        arr[1:3, 1:3] = 1
+        block.set_stageboard(arr)
+        self.play(Create(block))
+
+        question_vg = VGroup()
+        for i in range(1, 5):
+            for j in range(1, 5):
+                if i == 1 or i == 4 or j == 1 or j == 4:
+                    mark = Text("?", color = BLUE_D).scale(0.9).move_to(
+                        block.get_cell_center(i, j)
+                    )
+                    question_vg.add(mark)
+        self.play(FadeIn(question_vg))
+
+        self.wait(1.5)
+
+
+        block_vg = VGroup(*[
+            block.get_cell(i, j)
+            for i in [1, 2, 3]
+            for j in [1, 2, 3]
+        ])
+
+        rec = DashedVMobject(
+            SurroundingRectangle(block_vg, color = PINK)
+        )
+
+        self.play(
+            Create(rec)
+        )
+        self.wait(1)
+        self.play(FadeOut(rec))
+        self.wait(2)
+        self.play(FadeOut(question_vg))
+        self.wait(2)
+
+class StillThick(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        thickLife = CellBoard(
+            dimension = (8, 8)
+        )
+        thickLife.set_stageboard_by_rle("assets/thick.rle")
+        thickLife2 = thickLife.copy()
+        thickLife2.step()
+
+        thickLife.shift(4 * LEFT + DOWN)
+        thickLife2.shift(4 * RIGHT + DOWN)
+
+        arr = Arrow(1.5 * LEFT, 1.5 * RIGHT, color = RED, stroke_width = 17).shift(DOWN)
+        text = MyText("下一代", color = RED).scale(0.8).next_to(arr, DOWN).shift(0.15 * LEFT)
+        self.add(thickLife, thickLife2, arr, text)
+        self.wait(3)
+
+        cross = Cross(thickLife)
+        self.play(Create(cross))
+

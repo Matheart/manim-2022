@@ -52,21 +52,24 @@ pseudo / quasi still life
 
 ======== 静物的构造 ==============
 1. 最简单的静物构造方法 - figure 2.6, 2.7，记法：long, long long, long long long ..., long^n, with tail etc.
-Remark: boat with tail有cis, trans的记法，类似于化学里的
 2. 构造大的静物：
 不可能过厚，所以只有single-cell-thick path，需要加一点extra junk去suppress周围方格诞生生命（被称为stabilize）
 induction coil: stabilize edge
 
+（这段尽量缩减时间）
 最简单的构造方法就是直接延长一些生命的结构：
 比如
 boat可以延长中间的结构, long boat, long long boat, ...
 snake, long snake, long long snake, ...
 Notation记号：long^n = very^(n-1) long = extra^(n-2) long
 
-有时候可以用tail, pre-block来稳定一些结构，
+对于静物里的方块，
+我们知道里面每个细胞周围都已经有三个活着的细胞，
+所以我们可以断定方块周围一圈都没有细胞，
+否则方块里就会有细胞因过于拥挤在下一代死亡，违反静物的定义
+由此可以看出静物不会有“厚”的部分，
 
-我们知道对于方块，每个细胞周围正好有三个活着的细胞，我们可以断定方块周围一圈都没有细胞，否则方块里就会有细胞在下一代死亡，
-由此可以看出静物不会有“厚”的部分，它由单个细胞厚的线和方块构成，
+它由单个细胞厚的线和方块构成，
 如以下几个：
 
 （这里解释的不大好
