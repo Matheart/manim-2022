@@ -6,6 +6,7 @@ Create Time: 2022.05.30
 
 from manim import *
 from gol import CellBoard
+from rle_decode import *
 
 class CellBoardTest(Scene):
     def construct(self):
@@ -63,3 +64,15 @@ class SetSquareColorTest(Scene):
         self.wait(1)
         sq.set_color(BLUE_C).set_style(fill_opacity = 0.5, fill_color = BLUE_C, stroke_width = 0)
         self.wait(1)
+
+# 修当board是长方形时报错的问题
+class NotSquareTest(Scene):
+    def construct(self):
+        snake1 = CellBoard(
+            side_length = 0.5, 
+            dimension = (2, 4)
+        )
+        snake1.set_stageboard(
+            expand_rle("assets/snake.rle")
+        )
+        self.add(snake1)

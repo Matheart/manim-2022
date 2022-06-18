@@ -1,3 +1,5 @@
+from inspect import BoundArguments
+from this import s
 from manim import *
 from gol import *
 
@@ -12,6 +14,22 @@ class bgRec(BackgroundRectangle):
             color = BLACK, 
         )
         self.scale(1.2)
+
+class doubleLine(VGroup):
+    def __init__(self, mobject, **kwargs):
+        super().__init__(**kwargs)
+        l1 = Line(
+            color = YELLOW
+        ).scale_to_fit_width(mobject.width).next_to(mobject, DOWN)
+
+        l2 = Line(
+            start = [-mobject.width/2.0,0,0], 
+            end = [mobject.width/2.0,0,0], 
+            color = YELLOW
+        ).scale_to_fit_width(mobject.width).next_to(l1, DOWN, buff = 0.2)
+
+        self.add(l1)
+        self.add(l2)
 
 class MyTextTest(Scene):
     def construct(self):
@@ -208,3 +226,165 @@ class ThreeStructures(Scene):
     def construct(self):
         pass
 
+class ConstructSimple(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(2.5)
+        self.play(Write(text))
+
+        dl = doubleLine(text)
+        self.play(Create(dl), run_time = 0.5)
+        self.wait(2)
+
+        text.target = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dll = doubleLine(text.target).stretch_to_fit_width(16)
+        dll[1].shift(0.05 * UP)
+        self.play(
+            MoveToTarget(text),
+            ReplacementTransform(dl, dll)
+        )
+        self.wait(2)
+        boat1 = CellBoard(
+            side_length = 0.5, 
+            dimension = (3, 3)
+        )
+        boat1.set_stageboard(
+            expand_rle("assets/boat.rle")[::-1,::]
+        )
+
+        boat2 = CellBoard(
+            side_length = 0.5, 
+            dimension = (4, 4)
+        )
+        boat2.set_stageboard(
+            expand_rle("assets/longboat.rle")[::,::-1]
+        )
+
+        boat3 = CellBoard(
+            side_length = 0.5, 
+            dimension = (5, 5)
+        )
+        boat3.set_stageboard(
+            expand_rle("assets/verylongboat.rle")[::,::-1]
+        )
+
+        boat4 = CellBoard(
+            side_length = 0.5, 
+            dimension = (6, 6)
+        )
+        boat4.set_stageboard_by_rle("assets/long3boat.rle")
+
+        boat_vg = VGroup(boat1, boat2, boat3, boat4).arrange_in_grid(
+            1, 4, buff = 0.65
+        )
+        boat1.align_to(boat4, DOWN)
+        boat2.align_to(boat4, DOWN)
+        boat3.align_to(boat4, DOWN)
+
+        boat1_text = MyText("boat").scale(0.65).next_to(boat1, DOWN)
+        boat2_text = MyText("long boat").scale(0.65).next_to(boat2, DOWN)
+        boat3_text = MyText("long long boat").scale(0.65).next_to(boat3, DOWN)
+        boat4_text = MyText("long^3 boat").scale(0.65).next_to(boat4, DOWN)
+
+        self.add(boat1, boat1_text)
+        self.wait(2)
+        self.play(
+            Create(boat2),
+            Create(boat3),
+            Create(boat4)
+        )
+        self.play(
+            FadeIn(boat2_text, shift = UP),
+            FadeIn(boat3_text, shift = UP),
+            FadeIn(boat4_text, shift = UP)
+        )
+        self.wait(1.5)
+
+        self.play(
+            boat1.get_cell(1, 2).animate.set_color(LIGHT_PINK),
+            boat1.get_cell(2, 3).animate.set_color(LIGHT_PINK),
+            boat2.get_cell(1, 3).animate.set_color(LIGHT_PINK),
+            boat2.get_cell(2, 2).animate.set_color(LIGHT_PINK),
+            boat2.get_cell(2, 4).animate.set_color(LIGHT_PINK),
+            boat2.get_cell(3, 3).animate.set_color(LIGHT_PINK),
+            boat3.get_cell(1, 4).animate.set_color(LIGHT_PINK),
+            boat3.get_cell(2, 3).animate.set_color(LIGHT_PINK),
+            boat3.get_cell(3, 2).animate.set_color(LIGHT_PINK),
+            boat3.get_cell(2, 5).animate.set_color(LIGHT_PINK),
+            boat3.get_cell(3, 4).animate.set_color(LIGHT_PINK),
+            boat3.get_cell(4, 3).animate.set_color(LIGHT_PINK),
+            
+            boat4.get_cell(1, 5).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(2, 4).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(3, 3).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(4, 2).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(2, 6).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(3, 5).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(4, 4).animate.set_color(LIGHT_PINK),
+            boat4.get_cell(5, 3).animate.set_color(LIGHT_PINK),
+        )
+        self.wait(1)
+        self.play(Uncreate(VGroup(boat_vg, boat1_text, boat2_text, boat3_text, boat4_text)))
+
+        snake1 = CellBoard(
+            side_length = 0.4, 
+            dimension = (2, 4)
+        )
+        snake1.set_stageboard(
+            expand_rle("assets/snake.rle")[::-1, ::]
+        )
+
+        snake2 = CellBoard(
+            side_length = 0.4, 
+            dimension = (3, 5)
+        )
+        snake2.set_stageboard(
+            expand_rle("assets/longsnake.rle")[::,::-1]
+        )
+
+        snake3 = CellBoard(
+            side_length = 0.4, 
+            dimension = (4, 6)
+        )
+        snake3.set_stageboard(
+            expand_rle("assets/verylongsnake.rle")[::,::-1]
+        )
+        
+        snake_dot = MathTex(r"\cdots")
+        snake4 = CellBoard(
+            side_length = 0.37, 
+            dimension = (10, 8)
+        )
+        
+        snake4.set_stageboard(
+            expand_rle("assets/long6snake.rle")[::-1, ::]
+        )
+
+        snake_vg = VGroup(
+            snake1, snake2, snake3, snake_dot, snake4
+        ).arrange_in_grid(1, 5, buff = 0.55)
+        snake1.align_to(snake4, DOWN)
+        snake2.align_to(snake4, DOWN)
+        snake3.align_to(snake4, DOWN)
+        snake_dot.align_to(snake4, DOWN)
+        snake_vg.shift(0.1 * DOWN)
+
+        snake1_text = MyText("snake").scale(0.65).next_to(snake1, DOWN)
+        snake2_text = MyText("long snake").scale(0.65).next_to(snake2, DOWN)
+        snake3_text = MyText("long long snake").scale(0.65).next_to(snake3, DOWN)
+        snake4_text = MyText("long^n snake").scale(0.65).next_to(snake4, DOWN)
+
+        self.wait(2)
+        self.play(Create(snake_vg))
+        self.play(
+            FadeIn(
+                VGroup(snake1_text, snake2_text, snake3_text, snake4_text),
+                shift = UP
+            )
+        )
+        self.wait(2)
+        self.play(Wiggle(snake1_text))
+        self.wait(5)
+        self.play(Wiggle(snake2_text))
+        self.wait(1)
+        self.play(Wiggle(snake4_text))
+        self.wait(2)
