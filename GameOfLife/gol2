@@ -35,12 +35,16 @@
 在上一期视频中我们只展示了几个静物，但是还有非常多的静物没有展示出来，
 如果想枚举的话，最自然的方式就是按细胞数量枚举，但是目前会遇到一个问题：
 当我们列举到细胞数为8个的时候，我们能摆两个方块，随便摆放任何位置都可以，那就会有无限种情况，
-这个静物是由两个完全没有接触的静物组成的，我们显然不想让这种情况发生，
+
 于是我们进一步定义 严格静物 (strict still life) ：
 1. 若一个静物本身就连在一块（用术语讲是联通的话），那它就是严格静物
+beehive
 2. 若一个静物由几块组成（非联通的），而去掉一块或多块会影响整体的稳定性的话，那它就是严格静物
+mirrored table
 举例子：
-beehive, beehive with tail, mirrored table, aircraft carrier, block on table,
+beehive with tail, 
+aircraft carrier, 
+block on table,
 
 按这个定义，刚才由两个方块组成的静物就被排除在严格静物之外了
 且honey-form不是strict still life 

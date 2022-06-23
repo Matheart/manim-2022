@@ -1,5 +1,6 @@
 from inspect import BoundArguments
 from this import s
+from cv2 import cartToPolar
 from manim import *
 from matplotlib import animation
 from gol import *
@@ -596,6 +597,185 @@ class StrictStillLife(Scene):
             ear_unstable_copy.step()
             self.wait(0.15)
         self.wait(2)
+
+class StrictExample(Scene):
+    def construct(self):
+        text = MyText("静物的枚举 - 严格静物例子", color = YELLOW).scale(1.3).to_edge(UP)        
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        #--- gol objects --#
+        beehive_with_tail = CellBoard(
+            dimension = (5, 6)
+        )
+        beehive_with_tail.set_stageboard_by_rle("assets/beehivewithtail.rle")
+
+        carrier = CellBoard(
+            dimension = (3, 4)
+        )
+        carrier.set_stageboard_by_rle("assets/aircraftcarrier.rle")
+
+        block_on_table = CellBoard(
+            dimension = (5, 4)
+        )
+        block_on_table.set_stageboard_by_rle("assets/blockontable.rle")
+
+        life_vg = VGroup(beehive_with_tail, carrier, block_on_table).arrange_in_grid(1, 3, buff = 1.2).shift(0.8 * DOWN)
+
+        #------------------#
+        self.play(Create(life_vg))
+        self.wait(2)
+
+        blue_list = [
+            [1,2],[1,3],[2,4],[3,3],[3,2],[2,1],
+        ]
+
+        red_list = [
+            [3,5], [4,5],[5,5],[5,6]
+        ]
+
+        blue_vg = VGroup()
+        red_vg = VGroup()
+        for i in blue_list:
+            blue_vg.add(
+                beehive_with_tail.get_cell(i[0], i[1])
+            )
+        for j in red_list:
+            red_vg.add(
+                beehive_with_tail.get_cell(j[0], j[1])
+            )
+
+        self.play(blue_vg.animate.set_color(BLUE), red_vg.animate.set_color(RED))
+        self.wait(2)
+        self.play(blue_vg.animate.set_color(WHITE), red_vg.animate.set_color(WHITE))
+
+        segment = VGroup()
+        for i in range(1, len(blue_vg)):
+            # i-1, i
+            segment.add(
+                Line(
+                    blue_vg[i-1].get_center(),
+                    blue_vg[i].get_center(),
+                    color = GOLD
+                )
+            )
+        segment.add(
+            Line(
+                beehive_with_tail.get_cell_center(2, 1),
+                beehive_with_tail.get_cell_center(1, 2),
+                color = GOLD
+            )
+        )
+
+        for i in range(1, len(red_vg)):
+            # i-1, i
+            segment.add(
+                Line(
+                    red_vg[i-1].get_center(),
+                    red_vg[i].get_center(),
+                    color = GOLD
+                )
+            )
+        segment.add(
+            Line(
+                beehive_with_tail.get_cell_center(2, 4),
+                beehive_with_tail.get_cell_center(3, 5),
+                color = GOLD
+            )
+        )
+
+        self.play(Create(segment))
+        self.wait(2)
+
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{pifont}")
+        tick = Tex(r"\ding{51}", color = GREEN, tex_template = myTemplate).scale(1.5)
+        
+        tick1 = tick.copy().next_to(beehive_with_tail, DOWN)
+        tick2 = tick.copy().next_to(carrier, DOWN)
+        tick3 = tick.copy().next_to(block_on_table, DOWN)
+
+        self.play(FadeOut(segment), FadeIn(tick1, shift = UP))
+        self.wait(2.5)
+
+        self.play(
+            carrier.get_cell(1, 1).animate.set_color(GREY),
+            carrier.get_cell(1, 2).animate.set_color(GREY),
+            carrier.get_cell(2, 1).animate.set_color(GREY)
+        )
+        self.wait(2)
+        self.play(
+            carrier.get_cell(1, 1).animate.set_color(WHITE),
+            carrier.get_cell(1, 2).animate.set_color(WHITE),
+            carrier.get_cell(2, 1).animate.set_color(WHITE)
+        )      
+        self.wait()
+        self.play(FadeIn(tick2, shift = UP))
+        self.wait(1.5)
+        self.play(
+            block_on_table.get_cell(1, 3).animate.set_color(GREY),
+            block_on_table.get_cell(1, 4).animate.set_color(GREY),
+            block_on_table.get_cell(2, 3).animate.set_color(GREY),
+            block_on_table.get_cell(2, 4).animate.set_color(GREY),
+        )        
+        self.wait(1)
+        self.play(
+            block_on_table.get_cell(1, 3).animate.set_color(WHITE),
+            block_on_table.get_cell(1, 4).animate.set_color(WHITE),
+            block_on_table.get_cell(2, 3).animate.set_color(WHITE),
+            block_on_table.get_cell(2, 4).animate.set_color(WHITE),
+        )      
+        self.play(FadeIn(tick3, shift = UP))   
+        self.wait(2)       
+
+class NonstrictExample(Scene):
+    def construct(self):
+        text = MyText("静物的枚举 - 非严格静物例子", color = YELLOW).scale(1.3).to_edge(UP)        
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        board = CellBoard(
+            side_length = 0.4, 
+            dimension = (10, 10)
+        ).scale(0.8).shift(0.8 * DOWN + 3.5 * LEFT)
+
+        def get_block(start_x, start_y):
+            return VGroup(
+                board.get_cell(start_x, start_y),
+                board.get_cell(start_x + 1, start_y),
+                board.get_cell(start_x, start_y + 1),
+                board.get_cell(start_x + 1, start_y + 1),
+            )
+        get_block(3, 3).set_color(WHITE)
+        get_block(7, 7).set_color(WHITE)
+
+        farm = CellBoard(
+            side_length = 0.4,
+            dimension = (13, 13)
+        ).scale(0.8).shift(0.8 * DOWN + 3.5 * RIGHT)
+        farm.set_stageboard_by_rle("assets/honeyfarm.rle")
+
+        self.add(board, farm)
+        self.wait(8)
+
+class DirectEnum(Scene):
+    def construct(self):
+        text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)        
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        img1 = ImageMobject("assets/strictEnum1.png").scale(0.7).to_corner(UL).shift(1.5 * DOWN + RIGHT)
+        img2 = ImageMobject("assets/strictEnum2.png")
+        img2.scale_to_fit_height(img1.height)
+        img2.to_corner(UR).shift(1.5 * DOWN + LEFT)
+        self.play(FadeIn(img1, shift = UP), FadeIn(img2, shift = UP))
+        self.wait(4)
 
 class ConstructSimple(Scene):
     def construct(self):
