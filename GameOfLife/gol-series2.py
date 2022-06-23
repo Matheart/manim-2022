@@ -1,6 +1,7 @@
 from inspect import BoundArguments
 from this import s
 from manim import *
+from matplotlib import animation
 from gol import *
 
 class MyText(Text):
@@ -229,6 +230,372 @@ class GridRule(Scene):
 class ThreeStructures(Scene):
     def construct(self):
         pass
+
+class DisplayStill(Scene):
+    def construct(self):
+        text = MyText("静物的枚举", color = YELLOW).scale(2.5)
+        self.play(Write(text))
+
+        dl = doubleLine(text)
+        self.play(Create(dl), run_time = 0.5)
+        self.wait(2)
+
+        text.target = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
+        dll = doubleLine(text.target).stretch_to_fit_width(16)
+        dll[1].shift(0.05 * UP)
+        self.play(
+            MoveToTarget(text),
+            ReplacementTransform(dl, dll)
+        )
+        self.wait(2)
+
+        # Block 方块
+        Block_set = np.zeros((4, 4))
+        Block_set[1][1] = Block_set[1][2] = 1
+        Block_set[2][1] = Block_set[2][2] = 1
+        BlockCell = CellBoard(
+            dimension = (4, 4)
+        )
+        BlockCell.set_stageboard(Block_set)
+
+        # Boat 小船
+        Boat_set = np.zeros((5, 5))
+        Boat_set[1][2] = Boat_set[2][1] = Boat_set[2][3] = 1
+        Boat_set[3][2] = Boat_set[3][3] = 1
+
+        BoatCell = CellBoard(
+            dimension = (5, 5),
+        ).scale(0.9)
+        BoatCell.set_stageboard(Boat_set)
+
+        # Dead spark coil 熄灭的火花线圈
+        Coil_set = np.zeros((9, 9))
+        Coil_set[2][1] = Coil_set[2][2] = Coil_set[2][6] = Coil_set[2][7] = 1
+        Coil_set[3][1] = Coil_set[3][3] = Coil_set[3][5] = Coil_set[3][7] = 1
+        Coil_set[4][3] = Coil_set[4][5] = 1
+        Coil_set[5][1] = Coil_set[5][3] = Coil_set[5][5] = Coil_set[5][7] = 1
+        Coil_set[6][1] = Coil_set[6][2] = Coil_set[6][6] = Coil_set[6][7] = 1
+
+        CoilCell = CellBoard(
+            dimension = (9, 9),
+        ).scale(0.5)
+        CoilCell.set_stageboard(Coil_set)
+
+        # Cis-mirrored worm (触角)
+        Worm_set = np.zeros((9, 9))
+        Worm_set[0][2:4] = 1
+        Worm_set[1][1] = Worm_set[1][3] = 1
+        Worm_set[2][1] = Worm_set[2][6] = 1
+        Worm_set[3][2:7] = Worm_set[5][2:7] = 1
+        Worm_set[6][1] = Worm_set[6][6] = 1
+        Worm_set[7][1] = Worm_set[7][3] = 1
+        Worm_set[8][2:4] = 1
+
+        WormCell = CellBoard(
+            dimension = (9, 9),
+        ).scale(0.5)
+        WormCell.set_stageboard(Worm_set)
+
+        # Inflected clips (弯曲的回形针)
+        Clip_set = np.zeros((9, 9))
+        Clip_set[0][2] = Clip_set[0][6] = 1
+        Clip_set[1][1] = Clip_set[1][3] = Clip_set[1][5] = Clip_set[1][7] = 1
+        Clip_set[2][0] = Clip_set[2][3] = Clip_set[2][5] = Clip_set[2][8] = 1
+        Clip_set[3][0] = Clip_set[3][1] = Clip_set[3][3] = Clip_set[3][5] = Clip_set[3][7] = Clip_set[3][8] = 1
+        Clip_set[4][3] = Clip_set[4][5] = 1
+        Clip_set[5][0] = Clip_set[5][1] = Clip_set[5][3] = Clip_set[5][5] = Clip_set[5][7] = Clip_set[5][8] = 1
+        Clip_set[6][0] = Clip_set[6][3] = Clip_set[6][5] = Clip_set[6][8] = 1
+        Clip_set[7][1] = Clip_set[7][2] = Clip_set[7][6] = Clip_set[7][7] = 1
+
+        ClipCell = CellBoard(
+            dimension = (9, 9),
+        ).scale(0.5)
+        ClipCell.set_stageboard(Clip_set)
+
+        BlockCell.scale_to_fit_height(CoilCell.height)
+
+        cell_vg = VGroup(
+            BlockCell, CoilCell, WormCell, ClipCell
+        ).arrange_in_grid(1, 4, buff = 0.7)
+
+        BlockName = MyText("方块").next_to(BlockCell, DOWN)
+        CoilName = MyText("熄灭的火花线圈").scale(0.6).next_to(CoilCell, DOWN).align_to(BlockName, DOWN)
+        WormName = MyText("触角").next_to(WormCell, DOWN).align_to(BlockName, DOWN)
+        ClipName = MyText("弯曲的回形针").next_to(ClipCell, DOWN).scale(0.6).align_to(BlockName, DOWN)
+
+        text_vg = VGroup(BlockName, CoilName, WormName, ClipName)
+
+        self.play(Create(cell_vg))
+        self.play(
+            FadeIn(text_vg, shift = UP)
+        )
+        self.wait(4)
+
+class EnumerProb(Scene):
+    def construct(self):
+        text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        #------------ Cell object ------------#
+        boat = CellBoard(
+            side_length = 0.5, 
+            dimension = (3, 3)
+        )
+        boat.set_stageboard(
+            expand_rle("assets/boat.rle")[::-1,::]
+        )
+        boat.scale_to_fit_height(0.85)
+
+        snake = CellBoard(
+            side_length = 0.4, 
+            dimension = (2, 4)
+        )
+        snake.set_stageboard(
+            expand_rle("assets/snake.rle")[::-1, ::]
+        )
+        snake.scale_to_fit_height(0.63)
+
+        pond = CellBoard(
+            side_length = 0.4, 
+            dimension = (4, 4)
+        )
+        pond.set_stageboard(
+            expand_rle("assets/pond.rle")
+        )
+        pond.scale_to_fit_height(0.85)
+        #------------------------------------------#
+
+        fst = ["0", "...", "1", "5", "...", "?"]
+        snd = [
+            EngText("SSS", color = BLACK).scale(0.65), 
+            EngText("SSS", color = BLACK).scale(0.65), 
+            boat, snake, 
+            EngText("SSS", color = BLACK).scale(0.65), 
+            pond
+        ]
+
+        lst = [
+            [EngText(fst[i]).scale(0.8), snd[i]] 
+            for i in range(6)
+        ]
+        row_labels = [
+            EngText(i).scale(0.8) for i in
+            ["1", "...", "5", "6",  "...", "8"]
+        ]
+
+        table = MobjectTable(
+            lst,
+            row_labels = row_labels,
+            col_labels = [MyText("#静物个数").scale(0.8), MyText("例子").scale(0.8)],
+            v_buff = 0.37,
+            top_left_entry = MyText("#细胞个数").scale(0.8)
+        ).shift(DOWN + 0.22 * LEFT)
+
+        self.play(
+            FadeIn(table)
+        )
+        self.wait(2.5)
+        self.play(
+            FadeIn(Cross(table))
+        )
+        self.wait(2)
+
+        #rtable = 
+
+class BlockRandomPosition(Scene):
+    def construct(self):
+        text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
+        text_transform = MyText("静物的枚举 - 严格静物", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        board = CellBoard(
+            side_length = 0.4, 
+            dimension = (10, 10)
+        ).shift(0.8 * DOWN)
+
+        def get_block(start_x, start_y):
+            return VGroup(
+                board.get_cell(start_x, start_y),
+                board.get_cell(start_x + 1, start_y),
+                board.get_cell(start_x, start_y + 1),
+                board.get_cell(start_x + 1, start_y + 1),
+            )
+        get_block(3, 3).set_color(WHITE)
+        get_block(7, 7).set_color(WHITE)
+
+        self.add(board)
+
+        self.play(
+            get_block(3, 3).animate.set_color(GREY),
+            get_block(7, 7).animate.set_color(GREY),
+            get_block(2, 6).animate.set_color(WHITE),
+            get_block(8, 3).animate.set_color(WHITE),
+        )
+        self.wait(1)
+        self.play(
+            get_block(2, 6).animate.set_color(GREY),
+            get_block(8, 3).animate.set_color(GREY),
+            get_block(4, 2).animate.set_color(WHITE),
+            get_block(4, 7).animate.set_color(WHITE),
+        )
+        self.wait(1)
+        self.play(
+            get_block(4, 2).animate.set_color(GREY),
+            get_block(4, 7).animate.set_color(GREY),
+            get_block(2, 2).animate.set_color(WHITE),
+            get_block(8, 5).animate.set_color(WHITE),
+        )
+        self.wait(3)
+        self.play(
+            get_block(2, 2).animate.set_color(RED),
+            get_block(8, 5).animate.set_color(BLUE),            
+        )
+        self.wait(3)
+
+class StrictStillLife(Scene):
+    def construct(self):
+        text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
+        text_transform = MyText("静物的枚举 - 严格静物", color = YELLOW).scale(1.3).to_edge(UP)        
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        # beehive
+        beehive = CellBoard(
+            dimension = (3, 4)
+        )
+        beehive.set_stageboard_by_rle("assets/beehive.rle")
+
+        # mirror table
+        mirror = CellBoard(
+            dimension = (4, 5)
+        )
+        mirror.set_stageboard_by_rle("assets/mirroredtable.rle")
+
+        rule_vg = VGroup(beehive, mirror)
+        rule_vg.arrange_in_grid(1, 2, buff = 2)
+        rule_vg.shift(0.5 * DOWN)
+
+        #beehive.scale_to_fit_height(mirror.height)
+
+        col = ORANGE
+        beehive_connect_segment = VGroup(
+            Line(
+                beehive.get_cell_center(1, 2),
+                beehive.get_cell_center(1, 3),
+                color = col
+            ),
+
+            Line(
+                beehive.get_cell_center(1, 3),
+                beehive.get_cell_center(2, 4),
+                color = col
+            ),
+
+            Line(
+                beehive.get_cell_center(2, 4),
+                beehive.get_cell_center(3, 3),
+                color = col
+            ),
+
+            Line(
+                beehive.get_cell_center(3, 3),
+                beehive.get_cell_center(3, 2),
+                color = col
+            ),
+
+            Line(
+                beehive.get_cell_center(3, 2),
+                beehive.get_cell_center(2, 1),
+                color = col
+            ),
+
+            Line(
+                beehive.get_cell_center(2, 1),
+                beehive.get_cell_center(1, 2),
+                color = col
+            ),
+        )
+        ptsL = [[1,1],[1,2],[2,2],[3,2],[4,2],[4,1]]
+        mirror_connected_segmentL = VGroup()
+        mirror_connected_segmentR = VGroup()
+        for i in range(1, len(ptsL)):
+            # i-1, i
+            mirror_connected_segmentL.add(
+                Line(
+                    mirror.get_cell_center(ptsL[i-1][0], ptsL[i-1][1]),
+                    mirror.get_cell_center(ptsL[i][0], ptsL[i][1]),
+                    color = RED
+                )
+            )
+
+            mirror_connected_segmentR.add(
+                Line(
+                    mirror.get_cell_center(ptsL[i-1][0], 6 - ptsL[i-1][1]),
+                    mirror.get_cell_center(ptsL[i][0], 6 - ptsL[i][1]),
+                    color = BLUE
+                )
+            )
+
+        self.wait(2.5)
+        self.play(ReplacementTransform(text, text_transform))
+        self.play(Create(rule_vg))
+        self.wait(1)
+        self.play(Create(beehive_connect_segment))
+        self.wait(1)
+        self.play(Uncreate(beehive_connect_segment))
+        self.wait(2)
+        self.play(
+            Create(mirror_connected_segmentL),
+            Create(mirror_connected_segmentR)
+        )
+        self.wait(1.5)
+        mirror.target = mirror.copy().move_to(0.5 * DOWN).scale(1.5)
+        self.play(
+            FadeOut(beehive),
+            FadeOut(mirror_connected_segmentL),
+            FadeOut(mirror_connected_segmentR),
+            MoveToTarget(mirror)
+        )
+        self.wait()
+        animation_list = []
+        for i in ptsL:
+            animation_list.append(
+                mirror.get_cell(i[0], 6 - i[1]).animate.set_color(GREY)
+            )
+        self.play(AnimationGroup(*animation_list))
+
+        ear_unstable = CellBoard(
+            side_length = 0.4,
+            dimension = (11, 11)
+        ).shift(0.8 * DOWN)
+        arr = np.zeros((11, 11))
+        arr[3][4] = arr[3][5] = arr[4][5] = arr[5][5] = arr[6][5] = arr[6][4] = 1 
+        ear_unstable.set_stageboard(arr)
+
+        self.play(ReplacementTransform(mirror, ear_unstable))
+        self.wait()
+        self.play(ear_unstable.animate.shift(4 * LEFT))
+
+        arrow = Arrow(start = 1.2 * LEFT, end = 1.2 * RIGHT, stroke_width = 13).shift(DOWN)
+
+        ear_unstable_copy = ear_unstable.copy()
+        self.play(
+            GrowArrow(arrow),
+            ear_unstable_copy.animate.shift(8 * RIGHT)
+        )
+    
+        for i in range(15):
+            ear_unstable_copy.step()
+            self.wait(0.15)
+        self.wait(2)
 
 class ConstructSimple(Scene):
     def construct(self):

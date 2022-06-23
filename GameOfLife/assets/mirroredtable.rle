@@ -1,0 +1,5 @@
+#N mirroredtable.rle
+#C https://conwaylife.com/wiki/Mirrored_table
+#C https://www.conwaylife.com/patterns/mirroredtable.rle
+x = 5, y = 4, rule = B3/S23
+2ob2o$bobo$bobo$2ob2o!
