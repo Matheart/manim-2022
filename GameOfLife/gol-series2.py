@@ -963,7 +963,7 @@ class EquivNotation(Scene):
         snake3 = CellBoard(
             side_length = 0.4, 
             dimension = (5, 7)
-        ).scale(1.5)
+        ).scale(1.7).shift(0.5 * DOWN)
         snake3.set_stageboard(
             expand_rle("assets/long3snake.rle")
         )
@@ -989,6 +989,7 @@ class StillBlock(Scene):
         self.add(text, dl)
 
         block = CellBoard(
+            side_length = 0.6,
             dimension = (4, 4)
         )
         arr = np.zeros((4, 4))
@@ -1000,11 +1001,10 @@ class StillBlock(Scene):
         for i in range(1, 5):
             for j in range(1, 5):
                 if i == 1 or i == 4 or j == 1 or j == 4:
-                    mark = Text("?", color = BLUE_D).scale(0.9).move_to(
+                    mark = Text("?", color = "#00FFFF", fill_opacity = 10).scale(0.9).move_to(
                         block.get_cell_center(i, j)
                     )
                     question_vg.add(mark)
-        self.play(FadeIn(question_vg))
 
         self.wait(1.5)
 
@@ -1016,17 +1016,20 @@ class StillBlock(Scene):
         ])
 
         rec = DashedVMobject(
-            SurroundingRectangle(block_vg, color = PINK)
+            SurroundingRectangle(block_vg, color = "#00FF00").scale(0.95),
+            num_dashes = 30
         )
-
+        
         self.play(
             Create(rec)
         )
         self.wait(1)
         self.play(FadeOut(rec))
         self.wait(2)
+        """
         self.play(FadeOut(question_vg))
         self.wait(2)
+        """
 
 class StillThick(Scene):
     def construct(self):
