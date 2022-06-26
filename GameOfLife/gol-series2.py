@@ -2,7 +2,6 @@ from inspect import BoundArguments
 from this import s
 from cv2 import cartToPolar
 from manim import *
-from matplotlib import animation
 from gol import *
 
 class MyText(Text):
@@ -1050,7 +1049,7 @@ class StillThick(Scene):
         thickLife2.shift(4 * RIGHT + DOWN)
 
         arr = Arrow(1.5 * LEFT, 1.5 * RIGHT, color = RED, stroke_width = 17).shift(DOWN)
-        text = MyText("下一代", color = RED).scale(0.8).next_to(arr, DOWN).shift(0.15 * LEFT)
+        text = MyText("下一代", color = RED).scale(0.9).next_to(arr, DOWN).shift(0.15 * LEFT + 0.2 * UP)
         self.add(thickLife, thickLife2, arr, text)
         self.wait(3)
 

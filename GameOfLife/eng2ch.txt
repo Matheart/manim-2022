@@ -3,9 +3,6 @@ stable pattern 稳定结构
 Oscillator 振荡器
 generation 代
 strict still life 严格静物
-pseudo still life 伪静物
-quasi still life 准静物
 connected 连通
 eater 吞噬者
-grammar 构造规则
 induction coil 感应线圈
