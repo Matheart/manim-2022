@@ -4,14 +4,17 @@ from cv2 import cartToPolar
 from manim import *
 from gol import *
 
+# For Chinese text
 class MyText(Text):
     def __init__(self, text: str, font: str = "FZYanSongS-R-GB",  **kwargs):
         super().__init__(text = text, font = font, **kwargs)
 
+# For English Text
 class EngText(Text):
     def __init__(self, text: str, font: str = "Georgia",  **kwargs):
         super().__init__(text = text, font = font, **kwargs)
 
+# Provide the background rectangle for the mobject when appending that to the scene 
 class bgRec(BackgroundRectangle):
     def __init__(self, mobject, **kwargs):
         super().__init__(
@@ -20,6 +23,7 @@ class bgRec(BackgroundRectangle):
         )
         self.scale(1.2)
 
+# Double line under the title of intro scene of each part
 class doubleLine(VGroup):
     def __init__(self, mobject, **kwargs):
         super().__init__(**kwargs)
@@ -42,6 +46,7 @@ class MyTextTest(Scene):
         fzText     = MyText("中文字体", color = BLUE).shift(DOWN)
         self.add(normalText, fzText)
 
+# 当谈到生命游戏时我们通常指最受欢迎的版本 -- 康威生命游戏
 class FamousVersion(Scene):
     def construct(self):
         conway = ImageMobject("assets/Conway.jpg")
@@ -65,6 +70,18 @@ class FamousVersion(Scene):
         self.play(Write(conwayGame))
         self.wait(2)
 
+"""
+它在一个无限大的网格上进行（一个酷炫的FadeIn），每个方格有两种状态，
+有生命存在或无生命存在（左上角：灰色方块，死；白色方块，活 ），
+而状态的改变取决于周围八个方格的状态
+康威生命游戏的规则可以简化成B3/S23（Birth 3 / Survive 23），指：
+当一个死的细胞周围有三个细胞时下一代它会变成生的状态（Birth），
+当一个活的细胞周围有两个或者三个细胞时下一代它会继续生存，意味着少于两个或者多于三个它下一步会死亡，这很自然的模拟了大自然中周围细胞过少或者过于拥挤导致死亡的现象。
+
+为方便展示，我们把死去的方格标为浅蓝色
+根据这个规则，正如现实生命中的演化一样，整个网格一步步的迭代，
+初始状态第一代，迭代了n次就是第n代（generation）
+"""
 class GridRule(Scene):
     def construct(self):
         grid = CellBoard(
@@ -80,7 +97,8 @@ class GridRule(Scene):
 
         grid.set_stageboard(arr)
 
-        self.add(grid)
+        self.play(Create(grid), run_time = 4)
+        self.wait(2)
         
         white_sq = Square(fill_color = WHITE, side_length = 0.5, fill_opacity = 1)
         grey_sq = Square(fill_color = GREY, side_length = 0.5, fill_opacity = 1)
@@ -227,10 +245,15 @@ class GridRule(Scene):
             self.wait(0.18)
         self.wait(2)
 
+"""
+而当中有三种最为常见，稳定结构（更常用的叫法是静物），振荡器，和飞船
+静物指在每一步的迭代中一直保持不变，振荡器表示它的变化具有周期性，在固定的周期后会变回原样，飞船与振荡器类似，但不会停留在原地，而是会移动
+"""
 class ThreeStructures(Scene):
     def construct(self):
         pass
 
+# 在上一期视频中我们只展示了几个静物，但是还有非常多的静物没有展示出来
 class DisplayStill(Scene):
     def construct(self):
         text = MyText("静物的枚举", color = YELLOW).scale(2.5)
@@ -250,12 +273,12 @@ class DisplayStill(Scene):
         self.wait(2)
 
         # Block 方块
-        Block_set = np.zeros((4, 4))
-        Block_set[1][1] = Block_set[1][2] = 1
-        Block_set[2][1] = Block_set[2][2] = 1
+        Block_set = np.zeros((9, 9))
+        Block_set[3][4] = Block_set[3][5] = 1
+        Block_set[4][4] = Block_set[4][5] = 1
         BlockCell = CellBoard(
-            dimension = (4, 4)
-        )
+            dimension = (9, 9)
+        ).scale(0.5)
         BlockCell.set_stageboard(Block_set)
 
         # Boat 小船
@@ -318,9 +341,9 @@ class DisplayStill(Scene):
             BlockCell, CoilCell, WormCell, ClipCell
         ).arrange_in_grid(1, 4, buff = 0.7)
 
-        BlockName = MyText("方块").next_to(BlockCell, DOWN)
+        BlockName = MyText("方块").scale(0.6).next_to(BlockCell, DOWN)
         CoilName = MyText("熄灭的火花线圈").scale(0.6).next_to(CoilCell, DOWN).align_to(BlockName, DOWN)
-        WormName = MyText("触角").next_to(WormCell, DOWN).align_to(BlockName, DOWN)
+        WormName = MyText("触角").scale(0.6).next_to(WormCell, DOWN).align_to(BlockName, DOWN)
         ClipName = MyText("弯曲的回形针").next_to(ClipCell, DOWN).scale(0.6).align_to(BlockName, DOWN)
 
         text_vg = VGroup(BlockName, CoilName, WormName, ClipName)
@@ -331,6 +354,7 @@ class DisplayStill(Scene):
         )
         self.wait(4)
 
+# 如果想枚举的话，最自然的方式就是按细胞数量枚举，但是目前会遇到一个问题
 class EnumerProb(Scene):
     def construct(self):
         text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
@@ -365,25 +389,25 @@ class EnumerProb(Scene):
         pond.set_stageboard(
             expand_rle("assets/pond.rle")
         )
-        pond.scale_to_fit_height(0.85)
+        pond.scale_to_fit_height(1.3)
         #------------------------------------------#
 
-        fst = ["0", "...", "1", "5", "...", "?"]
+        fst = ["0", "...", "5", "...", "?"]
         snd = [
             EngText("SSS", color = BLACK).scale(0.65), 
             EngText("SSS", color = BLACK).scale(0.65), 
-            boat, snake, 
+            snake, 
             EngText("SSS", color = BLACK).scale(0.65), 
             pond
         ]
 
         lst = [
-            [EngText(fst[i]).scale(0.8), snd[i]] 
-            for i in range(6)
+            [MyText(fst[i]).scale(0.8), snd[i]] 
+            for i in range(5)
         ]
         row_labels = [
-            EngText(i).scale(0.8) for i in
-            ["1", "...", "5", "6",  "...", "8"]
+            MyText(i).scale(0.8) for i in
+            ["1", "...", "6",  "...", "8"]
         ]
 
         table = MobjectTable(
@@ -392,7 +416,7 @@ class EnumerProb(Scene):
             col_labels = [MyText("#静物个数").scale(0.8), MyText("例子").scale(0.8)],
             v_buff = 0.37,
             top_left_entry = MyText("#细胞个数").scale(0.8)
-        ).shift(DOWN + 0.22 * LEFT)
+        ).scale(0.9).shift(0.5 * DOWN + 0.22 * LEFT)
 
         self.play(
             FadeIn(table)
@@ -405,6 +429,8 @@ class EnumerProb(Scene):
 
         #rtable = 
 
+# 当我们列举到细胞数为8个的时候，我们能摆两个方块，随便摆放任何位置都可以，那就会有无限种情况
+# 颜色要改
 class BlockRandomPosition(Scene):
     def construct(self):
         text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
@@ -417,7 +443,7 @@ class BlockRandomPosition(Scene):
         board = CellBoard(
             side_length = 0.4, 
             dimension = (10, 10)
-        ).shift(0.8 * DOWN)
+        ).scale(0.95).shift(0.6 * DOWN)
 
         def get_block(start_x, start_y):
             return VGroup(
@@ -962,14 +988,14 @@ class EquivNotation(Scene):
         snake3 = CellBoard(
             side_length = 0.4, 
             dimension = (5, 7)
-        ).scale(1.7).shift(0.5 * DOWN)
+        ).scale(1.5)
         snake3.set_stageboard(
             expand_rle("assets/long3snake.rle")
         )
 
-        text1 = EngText("long^3 snake").scale(1.2).next_to(snake3, DOWN)
-        text2 = EngText("very very long snake").scale(1.2).next_to(snake3, DOWN)
-        text3 = EngText("extra long snake").scale(1.2).next_to(snake3, DOWN)
+        text1 = EngText("long^3 snake").scale(1.1).next_to(snake3, DOWN)
+        text2 = EngText("very very long snake").scale(1.1).next_to(snake3, DOWN)
+        text3 = EngText("extra long snake").scale(1.1).next_to(snake3, DOWN)
 
         self.add(snake3, text1)
 
@@ -1000,31 +1026,65 @@ class StillBlock(Scene):
         for i in range(1, 5):
             for j in range(1, 5):
                 if i == 1 or i == 4 or j == 1 or j == 4:
-                    mark = Text("?", color = "#00FFFF", fill_opacity = 10).scale(0.9).move_to(
+                    mark = Text("?", color = WHITE, fill_opacity = 10).scale(0.9).move_to(
                         block.get_cell_center(i, j)
                     )
                     question_vg.add(mark)
 
         self.wait(1.5)
 
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{pifont}")
 
-        block_vg = VGroup(*[
+        tick = Tex(r"\ding{51}", color = "#8A2BE2", tex_template = myTemplate).scale(0.8) # svg
+
+        block_vg1 = VGroup(*[
             block.get_cell(i, j)
             for i in [1, 2, 3]
-            for j in [1, 2, 3]
+            for j in [1, 2, 3]            
         ])
 
-        rec = DashedVMobject(
-            SurroundingRectangle(block_vg, color = "#00FF00").scale(0.95),
+        rec1 = DashedVMobject(
+            SurroundingRectangle(block_vg1, color = "#8A2BE2").scale(0.95),
             num_dashes = 30
         )
+
+        tick1 = VGroup(*[
+            tick.copy().move_to(block.get_cell_center(i, j))
+            for i, j in [[2,3],[3,2],[3,3]]
+        ]) 
         
         self.play(
-            Create(rec)
+            FadeIn(rec1), FadeIn(tick1)
         )
+
+        block_vg2 = VGroup(*[
+            block.get_cell(i, j)
+            for i in [1, 2, 3]
+            for j in [2, 3, 4]            
+        ])
+
+        rec2 = DashedVMobject(
+            SurroundingRectangle(block_vg2, color = "#8A2BE2").scale(0.95),
+            num_dashes = 30
+        )
+
+        tick2 = VGroup(*[
+            tick.copy().move_to(block.get_cell_center(i, j))
+            for i, j in [[2,2],[3,3],[3,2]]
+        ]) 
+
+        self.play(
+            FadeOut(rec1), FadeOut(tick1),
+            FadeIn(rec2), FadeIn(tick2)
+        )
+ 
+        """
         self.wait(1)
         self.play(FadeOut(rec))
         self.wait(2)
+        """
+
         """
         self.play(FadeOut(question_vg))
         self.wait(2)
@@ -1049,10 +1109,16 @@ class StillThick(Scene):
         thickLife2.shift(4 * RIGHT + DOWN)
 
         arr = Arrow(1.5 * LEFT, 1.5 * RIGHT, color = RED, stroke_width = 17).shift(DOWN)
+        notStill = MyText("非静物", color = RED).scale(0.9).next_to(arr, UP).shift(0.15 * LEFT + 0.2 * DOWN)
         text = MyText("下一代", color = RED).scale(0.9).next_to(arr, DOWN).shift(0.15 * LEFT + 0.2 * UP)
         self.add(thickLife, thickLife2, arr, text)
-        self.wait(3)
+        self.wait(1)
 
         cross = Cross(thickLife)
         self.play(Create(cross))
+        self.play(Write(notStill))
+        self.wait(2)
 
+class ConsistSingle(Scene):
+    def construct(self):
+        pass
