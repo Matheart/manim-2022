@@ -430,7 +430,6 @@ class EnumerProb(Scene):
         #rtable = 
 
 # 当我们列举到细胞数为8个的时候，我们能摆两个方块，随便摆放任何位置都可以，那就会有无限种情况
-# 颜色要改
 class BlockRandomPosition(Scene):
     def construct(self):
         text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
@@ -452,38 +451,48 @@ class BlockRandomPosition(Scene):
                 board.get_cell(start_x, start_y + 1),
                 board.get_cell(start_x + 1, start_y + 1),
             )
-        get_block(3, 3).set_color(WHITE)
-        get_block(7, 7).set_color(WHITE)
-
         self.add(board)
+
+        self.play(
+            get_block(3, 3).animate.set_color(WHITE),
+            get_block(7, 7).animate.set_color(WHITE),
+        )
+        self.wait(2)
+
+        self.play(
+            get_block(3, 3).animate.set_color(RED),
+            get_block(7, 7).animate.set_color(BLUE),
+        )
 
         self.play(
             get_block(3, 3).animate.set_color(GREY),
             get_block(7, 7).animate.set_color(GREY),
-            get_block(2, 6).animate.set_color(WHITE),
-            get_block(8, 3).animate.set_color(WHITE),
+            get_block(2, 6).animate.set_color(RED),
+            get_block(8, 3).animate.set_color(BLUE),
         )
         self.wait(1)
         self.play(
             get_block(2, 6).animate.set_color(GREY),
             get_block(8, 3).animate.set_color(GREY),
-            get_block(4, 2).animate.set_color(WHITE),
-            get_block(4, 7).animate.set_color(WHITE),
+            get_block(4, 2).animate.set_color(RED),
+            get_block(4, 7).animate.set_color(BLUE),
         )
         self.wait(1)
         self.play(
             get_block(4, 2).animate.set_color(GREY),
             get_block(4, 7).animate.set_color(GREY),
-            get_block(2, 2).animate.set_color(WHITE),
-            get_block(8, 5).animate.set_color(WHITE),
-        )
-        self.wait(3)
-        self.play(
             get_block(2, 2).animate.set_color(RED),
-            get_block(8, 5).animate.set_color(BLUE),            
+            get_block(8, 5).animate.set_color(BLUE),
         )
         self.wait(3)
 
+"""
+于是我们进一步定义 严格静物 (strict still life) ：
+1. 若一个静物本身就连在一块（用术语讲是联通的话），那它就是严格静物
+beehive
+2. 若一个静物由几块组成，也就是非联通的，而去掉一块或多块会让它变成非静物的话，那它就是严格静物
+mirrored table
+"""
 class StrictStillLife(Scene):
     def construct(self):
         text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)
@@ -569,9 +578,9 @@ class StrictStillLife(Scene):
                     color = BLUE
                 )
             )
-
-        self.wait(2.5)
+        self.wait(1)
         self.play(ReplacementTransform(text, text_transform))
+        self.wait(2.5)
         self.play(Create(rule_vg))
         self.wait(1)
         self.play(Create(beehive_connect_segment))
@@ -590,7 +599,6 @@ class StrictStillLife(Scene):
             FadeOut(mirror_connected_segmentR),
             MoveToTarget(mirror)
         )
-        self.wait()
         animation_list = []
         for i in ptsL:
             animation_list.append(
@@ -601,16 +609,16 @@ class StrictStillLife(Scene):
         ear_unstable = CellBoard(
             side_length = 0.4,
             dimension = (11, 11)
-        ).shift(0.8 * DOWN)
+        ).scale(0.9).shift(0.6 * DOWN)
         arr = np.zeros((11, 11))
         arr[3][4] = arr[3][5] = arr[4][5] = arr[5][5] = arr[6][5] = arr[6][4] = 1 
         ear_unstable.set_stageboard(arr)
 
         self.play(ReplacementTransform(mirror, ear_unstable))
-        self.wait()
         self.play(ear_unstable.animate.shift(4 * LEFT))
 
-        arrow = Arrow(start = 1.2 * LEFT, end = 1.2 * RIGHT, stroke_width = 13).shift(DOWN)
+        arrow = Arrow(start = 1.2 * LEFT, end = 1.2 * RIGHT, stroke_width = 13).shift(0.8 * DOWN)
+        notStill = MyText("不是静物").scale(0.65).next_to(arrow, UP).shift(0.2 * DOWN + 0.1 * LEFT)
 
         ear_unstable_copy = ear_unstable.copy()
         self.play(
@@ -621,8 +629,17 @@ class StrictStillLife(Scene):
         for i in range(15):
             ear_unstable_copy.step()
             self.wait(0.15)
+
+        self.play(Write(notStill))
         self.wait(2)
 
+"""
+举例子：
+如图所示有三个静物，
+第一个（beehive with tail）看起来好像是两块构成，但其实整一个是连通的，所以是严格静物
+第二个（aircraft carrier）去掉上面的部分后剩下的部分不是静物，所以它是严格静物
+第三个同理（block on table）
+"""
 class StrictExample(Scene):
     def construct(self):
         text = MyText("静物的枚举 - 严格静物例子", color = YELLOW).scale(1.3).to_edge(UP)        
@@ -755,6 +772,11 @@ class StrictExample(Scene):
         self.play(FadeIn(tick3, shift = UP))   
         self.wait(2)       
 
+"""
+按这个定义，刚才由两个方块组成的静物就被排除在严格静物之外了
+右边的静物由四个蜂窝构成，被叫做蜂蜜农场（是不是很形象），
+同理也不是严格静物，因为移去任意一个或多个,整体还是静物
+"""
 class NonstrictExample(Scene):
     def construct(self):
         text = MyText("静物的枚举 - 非严格静物例子", color = YELLOW).scale(1.3).to_edge(UP)        
@@ -787,6 +809,11 @@ class NonstrictExample(Scene):
         self.add(board, farm)
         self.wait(8)
 
+"""
+于是我们现在能直接枚举严格静物了：p35 table
+可以看到严格静物的数量随细胞数增加增长的很快，
+当细胞数为二十三的时候已经有将近一百六十多万个静物
+"""
 class DirectEnum(Scene):
     def construct(self):
         text = MyText("静物的枚举", color = YELLOW).scale(1.3).to_edge(UP)        
@@ -802,6 +829,14 @@ class DirectEnum(Scene):
         self.play(FadeIn(img1, shift = UP), FadeIn(img2, shift = UP))
         self.wait(4)
 
+"""
+最简单的构造方法就是直接延长一些生命的结构：
+比如
+boat可以延长中间的结构, long boat, long long boat, ...
+snake也可以延长中间的结构，
+记法很简单，每延长一次就多一个long，延长n次就是n个long或者简写成long^n次方
+也可用以下两种记法：very^(n-1) long = extra^(n-2) long
+"""
 class ConstructSimple(Scene):
     def construct(self):
         text = MyText("静物的构造", color = YELLOW).scale(2.5)
@@ -960,10 +995,10 @@ class ConstructSimple(Scene):
             )
         )
         self.wait(2)
-        self.play(Wiggle(snake1_text))
-        self.wait(5)
         self.play(Wiggle(snake2_text))
         self.wait(1)
+        self.play(Wiggle(snake3_text))
+        self.wait(3)
         self.play(Wiggle(snake4_text))
         self.wait(2)
         self.play(
@@ -977,6 +1012,7 @@ class ConstructSimple(Scene):
         )
         self.wait(2) 
 
+# 如这个long long long snake可以叫做very very long snake也可以叫做extra long snake
 class EquivNotation(Scene):
     def construct(self):
         text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
@@ -990,7 +1026,7 @@ class EquivNotation(Scene):
             dimension = (5, 7)
         ).scale(1.5)
         snake3.set_stageboard(
-            expand_rle("assets/long3snake.rle")
+            expand_rle("assets/long3snake.rle")[::,::-1]
         )
 
         text1 = EngText("long^3 snake").scale(1.1).next_to(snake3, DOWN)
@@ -1004,6 +1040,29 @@ class EquivNotation(Scene):
         self.wait(1)
         self.play(ReplacementTransform(text2, text3)) 
         self.wait(3)       
+
+# 静物有一个特点，就是不会有“厚”的部分
+class NoThick(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        thickLife = CellBoard(
+            dimension = (8, 8)
+        )
+        thickLife.set_stageboard_by_rle("assets/thick.rle")
+
+        thickLife.shift(DOWN)
+
+        self.add(thickLife)
+        self.wait(2.5)
+
+        cross = Cross(thickLife)
+        self.play(Create(cross))
+        self.wait(2)
 
 class StillBlock(Scene):
     def construct(self):
@@ -1100,25 +1159,80 @@ class StillThick(Scene):
 
         thickLife = CellBoard(
             dimension = (8, 8)
-        )
+        ).scale(0.9)
         thickLife.set_stageboard_by_rle("assets/thick.rle")
         thickLife2 = thickLife.copy()
         thickLife2.step()
 
-        thickLife.shift(4 * LEFT + DOWN)
-        thickLife2.shift(4 * RIGHT + DOWN)
+        thickLife.shift(4 * LEFT + 0.3 * DOWN)
+        thickLife2.shift(4 * RIGHT + 0.3 * DOWN)
 
-        arr = Arrow(1.5 * LEFT, 1.5 * RIGHT, color = RED, stroke_width = 17).shift(DOWN)
-        notStill = MyText("非静物", color = RED).scale(0.9).next_to(arr, UP).shift(0.15 * LEFT + 0.2 * DOWN)
+        arr = Arrow(1.5 * LEFT, 1.5 * RIGHT, color = RED, stroke_width = 17).shift(0.3 * DOWN)
+        notStill = MyText("非静物", color = ORANGE).scale(0.9).next_to(thickLife, DOWN)
         text = MyText("下一代", color = RED).scale(0.9).next_to(arr, DOWN).shift(0.15 * LEFT + 0.2 * UP)
-        self.add(thickLife, thickLife2, arr, text)
-        self.wait(1)
 
-        cross = Cross(thickLife)
-        self.play(Create(cross))
-        self.play(Write(notStill))
+        def get_block(start_x, start_y):
+            return VGroup(
+                thickLife.get_cell(start_x, start_y),
+                thickLife.get_cell(start_x + 1, start_y),
+                thickLife.get_cell(start_x, start_y + 1),
+                thickLife.get_cell(start_x + 1, start_y + 1),
+            )
+        blk = get_block(6, 2)
+
+        rec = DashedVMobject(SurroundingRectangle(
+            VGroup(*[
+                thickLife.get_cell(i, j)
+                for i in [5,6,7,8]
+                for j in [1,2,3,4]
+            ]),
+            color = "#00FF00",
+        ), num_dashes = 30).scale(0.95)
+
+        self.add(thickLife)
+        self.wait(1)
+        self.play(Create(rec))
+
+        circ_vg = VGroup(*[
+            Circle(radius = 0.1, color = "#00FF00").move_to(
+                thickLife.get_cell_center(i, j)
+            )
+            for i, j in [[5,3],[5,4],[6,4],[8,1],[8,2],[8,3]]
+        ])
+        self.play(FadeIn(circ_vg))
+        self.play(GrowArrow(arr), Transform(thickLife.copy(), thickLife2))
+        self.wait(1)
+        self.play(FadeIn(text))
+        self.wait(1)
+        self.play(FadeIn(notStill, shift = UP))
         self.wait(2)
 
 class ConsistSingle(Scene):
     def construct(self):
-        pass
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+        #singleLife1 10 * 10
+        #singleLife2 10 * 10
+        #singleLife3 10 * 10
+
+        singleLife1 = CellBoard(
+            dimension = (5, 7)
+        )
+        singleLife1.set_stageboard_by_rle("assets/carriersiameseeaterhead.rle")
+
+        singleLife2 = CellBoard(
+            dimension = (6, 5)
+        )
+        singleLife2.set_stageboard_by_rle("assets/cisblockonlongbookend.rle")
+
+        singleLife3 = CellBoard(
+            dimension = (6, 4)
+        )
+        singleLife3.set_stageboard_by_rle("assets/longintegral.rle")
+
+        life = VGroup(singleLife1, singleLife2, singleLife3).shift(0.3 * DOWN).arrange_in_grid(1, 3, buff = 1.2)
+        self.add(life)
+        self.wait(5)
