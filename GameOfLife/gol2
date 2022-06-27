@@ -89,9 +89,13 @@ snake也可以延长中间的结构，
 
 但反过来说，有些单个细胞厚的线本身未必是静物，大部分情况我们可以在它旁边加一些物体来稳定它：
 
-对于一长行或者一长列的细胞，也可以加物体来稳定它们，这些物体被称为感应线圈（induction coil)
-展示induction coil的table，
+对于一长行或者一长列的细胞，也可以通过在两旁加物体来稳定它们，
 展示feature 2.12
+
+这些物体被称为感应线圈（induction coil)
+展示induction coil的table，
+
+这个是另一个例子，它本身并不是静物，但在加了感应线圈就变成了静物
 展示feature 2.13
 
 无限静物 
@@ -141,6 +145,8 @@ induction coil 感应线圈
 glider 滑翔机
 recovery time 恢复时间
 weld 焊接
+beehive 蜂窝
+honey farm 蜂蜜农场
 
 ======== 资源推荐 ===========
 P2:

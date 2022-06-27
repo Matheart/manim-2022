@@ -1,4 +1,5 @@
 from inspect import BoundArguments
+from re import L
 from this import s
 from cv2 import cartToPolar
 from manim import *
@@ -1064,6 +1065,12 @@ class NoThick(Scene):
         self.play(Create(cross))
         self.wait(2)
 
+"""
+对于静物里的方块，
+我们知道里面每个细胞周围都已经有三个活着的细胞，
+所以我们可以断定方块周围一圈都没有细胞，
+否则方块里就会有细胞因过于拥挤在下一代死亡，违反静物的定义
+"""
 class StillBlock(Scene):
     def construct(self):
         text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
@@ -1149,6 +1156,9 @@ class StillBlock(Scene):
         self.wait(2)
         """
 
+"""
+所以像刚才展示的一样，存在方块周围有细胞，所以它不是静物
+"""
 class StillThick(Scene):
     def construct(self):
         text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
@@ -1207,6 +1217,7 @@ class StillThick(Scene):
         self.play(FadeIn(notStill, shift = UP))
         self.wait(2)
 
+# 所以静物只可能由单个细胞厚的线和方块构成
 class ConsistSingle(Scene):
     def construct(self):
         text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
@@ -1236,3 +1247,159 @@ class ConsistSingle(Scene):
         life = VGroup(singleLife1, singleLife2, singleLife3).shift(0.3 * DOWN).arrange_in_grid(1, 3, buff = 1.2)
         self.add(life)
         self.wait(5)
+
+# 但反过来说，有些单个细胞厚的线本身未必是静物，大部分情况我们可以在它旁边加一些物体来稳定它
+class MayNotStill(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        maynot = CellBoard(
+            side_length = 0.3,
+            dimension = (10, 24)
+        ).shift(0.8 * DOWN)
+
+        maynot.set_stageboard_by_rle("assets/maynot.rle")
+
+        cell1 = CellBoard(
+            side_length = 0.3,
+            dimension = (10, 12)
+        ).shift(3 * LEFT + 0.8 * DOWN)
+        cell1.set_stageboard(maynot.board_arr[::, :12])
+
+        cell2 = CellBoard(
+            side_length = 0.3,
+            dimension = (10, 11)
+        ).shift(3 * RIGHT + 0.8 * DOWN)
+
+        cell2.set_stageboard(maynot.board_arr[::, 13:])
+
+        for i in range(10):
+            for j in range(11):
+                if cell2.board_arr[i, j] == 1 and cell1.board_arr[i, j] != 1:
+                    cell2.get_cell(i + 1, j + 1).set_color(BLUE)
+        
+        self.play(Create(cell1))
+        self.wait(2)
+        self.play(Create(cell2))
+        self.wait(3)
+
+"""
+对于一长行或者一长列的细胞，也可以加物体来稳定它们
+展示feature 2.12
+展示feature 2.13
+"""
+class InductionCoil(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        induct1 = CellBoard(
+            dimension = (7, 12),
+            side_length = 0.5
+        ).shift(0.8 * DOWN)
+
+        induct1.set_stageboard_by_rle("assets/induct1.rle")
+
+        self.add(induct1)
+        
+        extern_vg1 = VGroup()
+        for i in range(7):
+            for j in range(12):
+                if induct1.board_arr[i, j] == 1:
+                    if j <= 4 or j >= 9:
+                        extern_vg1.add(
+                            induct1.get_cell(
+                                i + 1, j + 1
+                            )
+                        )
+        
+        extern_vg1.set_color(GREY)
+
+        self.wait(2)
+        self.play(extern_vg1.animate.set_color(BLUE))
+        self.wait(2)
+
+"""
+这些物体被称为感应线圈（induction coil)
+展示induction coil的table，
+"""
+class InductionCoilEnum(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        coil1 = CellBoard(side_length = 0.4, dimension = (3, 5))
+        coil1.set_stageboard_by_rle("assets/house.rle")
+
+        coil2 = CellBoard(side_length = 0.4, dimension = (4, 4))
+        coil2.set_stageboard_by_rle("assets/wing.rle")
+
+        coil3 = CellBoard(side_length = 0.4, dimension = (4, 7))
+        coil3.set_stageboard_by_rle("assets/anvil.rle")
+
+        coil4 = CellBoard(side_length = 0.4, dimension = (4, 6))
+        coil4.set_stageboard_by_rle("assets/racetrack.rle")
+
+        coil5 = CellBoard(side_length = 0.4, dimension = (4, 6))
+        coil5.set_stageboard_by_rle("assets/worm.rle")
+
+        coil6 = CellBoard(side_length = 0.4, dimension = (3, 7))
+        coil6.set_stageboard_by_rle("assets/bookendsiamesetable.rle")
+
+        coil = VGroup(
+            coil1, coil2, coil3, coil4, coil5, coil6
+        ).arrange_in_grid(2, 3, buff = 0.9).shift(0.6 * DOWN)
+
+        zhu = MyText("*感应线圈并不是静物，而是拿来稳定一长行/列细胞的物体").scale(0.3).next_to(dl, DOWN).to_edge(RIGHT).shift(0.45 * RIGHT + 0.15 * UP)
+        self.add(zhu)
+        self.add(coil)
+        self.wait(5)
+
+"""
+这个是另一个例子，它本身并不是静物，但在加了感应线圈就变成了静物
+展示feature 2.13
+"""
+class AnotherInductionCoil(Scene):
+    def construct(self):
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+        
+        zhu = MyText("*感应线圈并不是静物，而是拿来稳定一长行/列细胞的物体").scale(0.3).next_to(dl, DOWN).to_edge(RIGHT).shift(0.45 * RIGHT + 0.15 * UP)
+        self.add(zhu)
+
+        induct2 = CellBoard(
+            dimension = (11, 31),
+            side_length = 0.3
+        ).shift(0.8 * DOWN)
+
+        induct2.set_stageboard_by_rle("assets/induct2.rle")
+
+        extern_vg2 = VGroup()
+        for i in range(11):
+            for j in range(31):
+                if induct2.board_arr[i, j] == 1:
+                    if i <= 3 or i >= 7:
+                        extern_vg2.add(
+                            induct2.get_cell(
+                                i + 1, j + 1
+                            )
+                        )
+        extern_vg2.set_color(GREY)
+
+        self.play(Create(induct2))
+        self.wait(2.5)
+        self.play(extern_vg2.animate.set_color(BLUE))
+        self.wait(2.5)
