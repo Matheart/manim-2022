@@ -1376,7 +1376,7 @@ class AnotherInductionCoil(Scene):
         dl[1].shift(0.05 * UP)
         
         self.add(text, dl)
-        
+
         zhu = MyText("*感应线圈并不是静物，而是拿来稳定一长行/列细胞的物体").scale(0.3).next_to(dl, DOWN).to_edge(RIGHT).shift(0.45 * RIGHT + 0.15 * UP)
         self.add(zhu)
 
@@ -1403,3 +1403,30 @@ class AnotherInductionCoil(Scene):
         self.wait(2.5)
         self.play(extern_vg2.animate.set_color(BLUE))
         self.wait(2.5)
+
+"""
+上面我们都是在讨论构造有限个细胞的静物，那么是否存在无限个细胞的静物呢？
+答案是肯定的，有以下四种：
+"""
+class FiniteStill(Scene):
+    def construct(self):
+        pass
+
+# 需要加文字
+class InfiniteStill(Scene):
+    def construct(self):
+        zebra = CellBoard(dimension = (21, 27), side_length = 0.69).shift(1.9 * RIGHT + 1.5 * UP)
+        zebra.set_stageboard_by_rle("assets/zebrastripes.rle")
+        chicken = CellBoard(dimension = (40, 36))
+        chicken.set_stageboard_by_rle("assets/chickenwire.rle")
+        onion = CellBoard(dimension = (96, 96))
+        onion.set_stageboard_by_rle("assets/onionrings.rle")
+
+        self.add(zebra)
+        self.wait(3)
+        self.remove(zebra)
+        self.add(chicken)
+        self.wait(3)
+        self.remove(chicken)
+        self.add(onion)
+        self.wait(3)
