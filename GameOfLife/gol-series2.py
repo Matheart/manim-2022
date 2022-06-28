@@ -252,7 +252,62 @@ class GridRule(Scene):
 """
 class ThreeStructures(Scene):
     def construct(self):
-        pass
+        still = CellBoard(
+            side_length = 0.42,
+            dimension = (6, 7)
+        )
+        still.set_stageboard_by_rle("assets/scorpion.rle")
+
+        oscil = CellBoard(
+            side_length = 0.42,
+            dimension = (8, 8)
+        )
+        oscil.set_stageboard_by_rle("assets/octagon2.rle")
+
+        spaceship = CellBoard(
+            side_length = 0.42,
+            dimension = (8, 8)
+        )
+        board_arr = np.zeros((8, 8), dtype  = "int64")
+        board_arr[0, 1] = board_arr[1, 2] = board_arr[2, :3] = 1
+        spaceship.set_stageboard(board_arr)
+
+        vg = VGroup(still, oscil, spaceship).arrange_in_grid(1, 3, buff = 1)
+        
+        still_text = MyText("静物").next_to(still, DOWN)
+        oscil_text = MyText("振荡器").next_to(oscil, DOWN)
+        spaceship_text = MyText("飞船").next_to(spaceship, DOWN)
+        still_text.align_to(oscil_text, DOWN)
+
+        self.play(Create(vg))
+
+        self.play(
+            FadeIn(still_text, shift = UP),
+            FadeIn(oscil_text, shift = UP),
+            FadeIn(spaceship_text, shift = UP)
+        )
+        self.wait(2)
+        for _ in range(17):
+            oscil.step()
+            spaceship.step()
+            self.wait(0.6)
+        self.wait(2)
+
+        """
+        self.play(FadeIn(still_text, shift = UP))
+        self.wait(3)
+        self.play(FadeIn(oscil_text, shift = UP))
+        self.wait()
+        for _ in range(10):
+            oscil.step()
+            self.wait(0.2)
+        self.wait(1)
+        self.play(FadeIn(spaceship_text, shift = UP))
+        for _ in range(15):
+            spaceship.step()
+            self.wait(0.15)
+        self.wait(3)
+        """
 
 # 在上一期视频中我们只展示了几个静物，但是还有非常多的静物没有展示出来
 class DisplayStill(Scene):
@@ -1410,7 +1465,48 @@ class AnotherInductionCoil(Scene):
 """
 class FiniteStill(Scene):
     def construct(self):
-        pass
+        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+        #singleLife1 10 * 10
+        #singleLife2 10 * 10
+        #singleLife3 10 * 10
+
+        singleLife1 = CellBoard(
+            dimension = (5, 7)
+        )
+        singleLife1.set_stageboard_by_rle("assets/carriersiameseeaterhead.rle")
+
+        singleLife2 = CellBoard(
+            dimension = (6, 5)
+        )
+        singleLife2.set_stageboard_by_rle("assets/cisblockonlongbookend.rle")
+
+        singleLife3 = CellBoard(
+            dimension = (6, 4)
+        )
+        singleLife3.set_stageboard_by_rle("assets/longintegral.rle")
+
+        life = VGroup(singleLife1, singleLife2, singleLife3).shift(0.3 * DOWN).arrange_in_grid(1, 3, buff = 1.2)
+        
+        text1 = MyText("细胞数：11").scale(0.85).next_to(singleLife1, DOWN)
+        text2 = MyText("细胞数：12").scale(0.85).next_to(singleLife2, DOWN)
+        text3 = MyText("细胞数：10").scale(0.85).next_to(singleLife3, DOWN)
+
+        self.add(life)
+        self.add(text1, text2, text3)
+        self.wait(5)
+        
+        black_rec = Rectangle(height = 5, width = 20, color = BLACK, fill_opacity = 0.8).to_edge(DOWN)
+        question_mark = Text("?", color = RED).scale(5)
+
+        self.play(
+            FadeIn(black_rec),
+            GrowFromCenter(question_mark)
+        )
+        self.wait(2)
 
 # 需要加文字
 class InfiniteStill(Scene):
@@ -1422,11 +1518,25 @@ class InfiniteStill(Scene):
         onion = CellBoard(dimension = (96, 96))
         onion.set_stageboard_by_rle("assets/onionrings.rle")
 
+        #zebra_text = MyText("斑马条纹")
+        #zebra_text2 = EngText("Zebra Stripes")
+        zebra_vg = VGroup(MyText("斑马条纹"), EngText("Zebra Stripes")).scale(0.85).arrange_in_grid(2, 1).to_edge(UL).shift(0.3 * UP)
+        zebra_rect = BackgroundRectangle(zebra_vg, color = BLACK).scale(1.2)
+
+        chicken_vg = VGroup(MyText("鸡栏网"), EngText("Chicken Wire")).scale(0.85).arrange_in_grid(2, 1).to_edge(UL).shift(0.3 * UP)
+        chicken_rect = BackgroundRectangle(chicken_vg, color = BLACK).scale(1.2)
+
+        onion_vg = VGroup(MyText("洋葱圈"), EngText("Onion Rings")).scale(0.85).arrange_in_grid(2, 1).to_edge(UL).shift(0.3 * UP)
+        onion_rect = BackgroundRectangle(onion_vg, color = BLACK).scale(1.2)
+
         self.add(zebra)
+        self.add(zebra_rect, zebra_vg)
+
         self.wait(3)
-        self.remove(zebra)
-        self.add(chicken)
+        self.remove(zebra, zebra_rect, zebra_vg)
+
+        self.add(chicken, chicken_rect, chicken_vg)
         self.wait(3)
-        self.remove(chicken)
-        self.add(onion)
+        self.remove(chicken, chicken_rect, chicken_vg)
+        self.add(onion, onion_rect, onion_vg)
         self.wait(3)
