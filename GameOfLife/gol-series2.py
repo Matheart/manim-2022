@@ -3,6 +3,7 @@ from re import L
 from this import s
 from cv2 import cartToPolar
 from manim import *
+from numpy import recfromtxt
 from gol import *
 
 # For Chinese text
@@ -1540,3 +1541,263 @@ class InfiniteStill(Scene):
         self.remove(chicken, chicken_rect, chicken_vg)
         self.add(onion, onion_rect, onion_vg)
         self.wait(3)
+
+# 正如上集所说，滑翔机是最小的飞船，它在生命游戏中扮演非常重要的角色
+class StartUsage(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(2.5)
+        self.play(Write(text))
+
+        dl = doubleLine(text)
+        self.play(Create(dl), run_time = 0.5)
+        self.wait(2)
+
+        text.target = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dll = doubleLine(text.target).stretch_to_fit_width(16)
+        dll[1].shift(0.05 * UP)
+
+        spaceship = CellBoard(
+            side_length = 0.35,
+            dimension = (12, 12)
+        ).shift(0.7 * DOWN)
+        board_arr = np.zeros((12, 12), dtype  = "int64")
+        board_arr[0, 1] = board_arr[1, 2] = board_arr[2, :3] = 1
+        spaceship.set_stageboard(board_arr)
+
+        self.play(
+            MoveToTarget(text),
+            ReplacementTransform(dl, dll),
+        )
+        rec = SurroundingRectangle(spaceship, color = BLACK, fill_opacity = 1)
+        self.add(spaceship)
+        self.add(rec)
+        self.play(FadeOut(rec))
+        #self.play(Create(spaceship))
+        #self.wait(2)
+        
+        for _ in range(30):
+            spaceship.step()
+            self.wait(0.15)
+        self.wait(2)
+
+"""
+部分静物能有效的起到删除滑翔机的作用，因为整个动作很像把滑翔机吞噬，所以我们将它们称为吞噬者 (Eater)
+像画面上展示的就是最受欢迎的吞噬者
+因为它占的空间小而且被滑翔机冲击后恢复时间(Recovery Time)短，
+"""
+class EaterDef(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        eater_glider = CellBoard(
+            dimension = (7, 8)
+        ).shift(0.4 * DOWN)
+        eater_glider.set_stageboard_by_rle(
+            "assets/eater_glider.rle"
+        )
+        text = MyText("吞噬者").next_to(eater_glider, DOWN)
+        self.add(eater_glider)
+        eater_glider.save_state()
+        self.wait(1.5)
+        for _ in range(6):
+            eater_glider.step()
+            self.wait(0.5)
+        self.wait(1.5)
+        self.play(Write(text))
+        self.wait(4)
+        self.play(eater_glider.animate.restore())
+
+        rect = DashedVMobject(SurroundingRectangle(
+            VGroup(*[
+                eater_glider.get_cell(
+                    i, j
+                )
+                for i in range(4, 8)
+                for j in range(5, 9)
+            ]),
+            color = ORANGE
+        ), num_dashes = 35).scale(0.95)
+
+        GenerationText = MyText("0").to_corner(DR)
+
+        self.play(Create(rect), FadeIn(GenerationText))
+        self.wait()
+
+        eater_glider.set_stageboard_by_rle(
+            "assets/eater_glider.rle"
+        )
+        
+        for i in range(4):
+            eater_glider.step()
+            self.remove(GenerationText)
+            GenerationText = MyText(str(i + 1)).to_corner(DR)
+            self.add(GenerationText)
+            self.wait(0.5)
+        self.wait(2)
+
+# 同时它也可以吞噬掉其他类型的飞船
+class EatOtherTypes(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        eater_multi1 = CellBoard(
+            dimension = (8, 34),
+            side_length = 0.22
+        ).shift(0.8 * UP)
+        eater_multi1.set_stageboard(
+            expand_rle("assets/eater_multi.rle")[::, 11:45]
+        )
+
+        eater_multi2 = CellBoard(
+            dimension = (8, 34),
+            side_length = 0.22
+        ).shift(2.0 * DOWN)
+        stage = expand_rle("assets/eater_multi.rle")[::, 44:]
+        stage[-1, 0] = 0
+        eater_multi2.set_stageboard(
+            stage
+        )
+
+        self.add(eater_multi1, eater_multi2)
+        self.wait(3)
+        for i in range(20):
+            eater_multi1.step()
+            eater_multi2.step()
+            self.wait(0.15)
+        self.wait(2)
+
+"""
+除此之外还有其他吞噬者有不同的作用
+"""
+class OtherEaters(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+        # eater 1, eater 2, eater 5
+        eater1 = CellBoard(
+            dimension = (4, 4),
+            side_length = 0.4
+        )
+        eater1.set_stageboard_by_rle("assets/eater1.rle")
+
+        eater2 = CellBoard(
+            dimension = (7, 7),
+            side_length = 0.4
+        )
+        eater2.set_stageboard_by_rle("assets/eater2.rle")
+
+        eater5 = CellBoard(
+            dimension = (6, 9),
+            side_length = 0.4
+        )
+        eater5.set_stageboard_by_rle("assets/eater5.rle")
+
+        eater_vg = VGroup(
+            eater1, eater2, eater5
+        )
+        eater_vg.arrange_in_grid(1, 3, buff = 1.2)
+
+        self.add(eater_vg)
+
+        eater1_text = EngText("Eater 1").scale(0.8).next_to(eater1, DOWN)
+        eater2_text = EngText("Eater 2").scale(0.8).next_to(eater2, DOWN)
+        eater5_text = EngText("Eater 5").scale(0.8).next_to(eater5, DOWN)
+
+        eater2_text.shift(0.2 * DOWN)
+        eater1_text.align_to(eater2_text, DOWN)
+        eater5_text.align_to(eater2_text, DOWN)
+
+        self.add(eater1_text, eater2_text, eater5_text)
+        self.wait(2.5)
+
+"""
+像eater 2能够吞噬来自四个平行方向的滑翔机, 
+eater 5能吞噬来自两个垂直方向的滑翔机
+"""
+class OtherEatersFunction(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        eater2 = CellBoard(
+            dimension = (33, 35),
+            side_length = 0.12
+        ).shift(0.6 * DOWN)
+        eater2.set_stageboard_by_rle("assets/eater2_four_path.rle")
+
+        self.add(eater2)
+
+        for _ in range(20):
+            eater2.step()
+
+        for _ in range(80):
+            eater2.step()
+            self.wait(0.05)
+        self.wait(3)
+
+        eater5 = CellBoard(
+            dimension = (13, 12),
+            side_length = 0.3
+        ).shift(0.6 * DOWN)
+        eater5.set_stageboard_by_rle("assets/eater5_two_path.rle")
+
+        self.play(ReplacementTransform(eater2, eater5))
+        self.wait(2)
+
+        for _ in range(24):
+            eater5.step()
+            self.wait(0.1)
+        self.wait(3)
+
+"""
+有些静物不能完全吞噬单个滑翔机但能吞噬一对吞噬机，
+像蛇在接收一个滑翔机后会把它变成小船，再接收第二个把小船消掉，只剩下它自己；
+"""
+class BoatBit(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        boat_bit = CellBoard(
+            dimension = (15, 20),
+            side_length = 0.25
+        ).shift(0.6 * DOWN)
+        boat_bit.set_stageboard_by_rle(
+            "assets/boat_bit.rle"
+        )
+
+        self.add(boat_bit)
+        self.wait(4)
+        for _ in range(12):
+            boat_bit.step()
+            self.wait(0.2)
+        self.wait(1.7)
+        for _ in range(32):
+            boat_bit.step()
+            self.wait(0.1)
+        self.wait(2)
+
+class LoafFlip(Scene):
+    def construct(self):
+        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
