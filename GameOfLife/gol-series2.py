@@ -1,9 +1,4 @@
-from inspect import BoundArguments
-from re import L
-from this import s
-from cv2 import cartToPolar
 from manim import *
-from numpy import recfromtxt
 from gol import *
 
 # For Chinese text
@@ -54,9 +49,11 @@ class FamousVersion(Scene):
         conway = ImageMobject("assets/Conway.jpg")
         magazine = ImageMobject("assets/Scientific_American.jpeg")
         conway.height = 4
-        conway.shift(3 * LEFT + 0.5 * DOWN)
+        conway.shift(3 * LEFT)
         magazine.height = 5.5
         magazine.shift(3 * RIGHT + 0.5 * DOWN)
+
+        conway.align_to(magazine, UP)
 
         self.play(
             FadeIn(conway, shift = RIGHT),
@@ -1545,7 +1542,7 @@ class InfiniteStill(Scene):
 # 正如上集所说，滑翔机是最小的飞船，它在生命游戏中扮演非常重要的角色
 class StartUsage(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(2.5)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(2.5)
         self.play(Write(text))
 
         dl = doubleLine(text)
@@ -1587,7 +1584,7 @@ class StartUsage(Scene):
 """
 class EaterDef(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
@@ -1642,7 +1639,7 @@ class EaterDef(Scene):
 # 同时它也可以吞噬掉其他类型的飞船
 class EatOtherTypes(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
@@ -1679,7 +1676,7 @@ class EatOtherTypes(Scene):
 """
 class OtherEaters(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
@@ -1727,7 +1724,7 @@ eater 5能吞噬来自两个垂直方向的滑翔机
 """
 class OtherEatersFunction(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
@@ -1769,7 +1766,7 @@ class OtherEatersFunction(Scene):
 """
 class BoatBit(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
@@ -1794,10 +1791,207 @@ class BoatBit(Scene):
             self.wait(0.1)
         self.wait(2)
 
+"""
+叶子接收一个滑翔机之后朝向会反过来
+在另一个方向接收滑翔机之后再正回来 
+"""
 class LoafFlip(Scene):
     def construct(self):
-        text = MyText("静物的用途", color = YELLOW).scale(1.3).to_edge(UP)
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
         self.add(text, dl)
+
+        loaf_flip = CellBoard(
+            side_length = 0.3,
+            dimension = (11, 11)
+        ).shift(0.5 * DOWN)
+        loaf_flip.set_stageboard_by_rle("assets/loaf_flip.rle")
+
+        self.add(loaf_flip)
+
+        self.wait(2)
+
+        for _ in range(4):
+            loaf_flip.step()
+            self.wait(0.3)
+        
+        self.wait(2.5)
+
+        for _ in range(4):
+            loaf_flip.step()
+            self.wait(0.3)
+        
+        self.wait(2)
+
+"""
+这个特点被用在了eater 3的设计当中
+当接收滑翔机过后叶子朝向反过来
+旁边的结构又会把它正回来
+"""
+class Eater3(Scene):
+    def construct(self):
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        eater3 = CellBoard(
+            dimension = (16, 16),
+            side_length = 0.26
+        ).shift(0.6 * DOWN)
+        eater3.set_stageboard_by_rle("assets/eater3_glider.rle")
+        eater3_text = EngText("Eater 3").scale(.8).next_to(dl, DOWN).shift(4 * LEFT)
+        self.add(eater3, eater3_text)
+        self.wait(2)
+
+        for _ in range(8):
+            eater3.step()
+            self.wait(0.3)
+        self.wait(2.5)
+        for _ in range(8):
+            eater3.step()
+            self.wait(0.3)
+        self.wait(2.5)
+    
+"""
+考虑以下这个场景，如果我们想删掉以上两个滑翔机，第一个想法是做两个吞噬者分别吞掉滑翔机，
+但因为两个滑翔机已经靠的太近，
+已经没有空间同时放下两个吞噬者，而且让它们依然是静物
+解决方案是把两个吞噬者“焊接”在一起
+对于eater 1来说只有上方的部分真正起到吞噬的作用，下方只是做支撑，
+于是我们可以保留上方的结构，重新设计支撑部分
+"""
+class WeldedStill(Scene):
+    def construct(self):
+        text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        modified_table = CellBoard(
+            dimension = (13, 21),
+            side_length = 0.3
+        ).shift(0.6 * DOWN)
+
+        arr = expand_rle("assets/unstable_eater.rle")
+        modified_arr = arr.copy()
+        modified_arr[6:, ::] = 0
+        #null_arr = np.zeros((1, 21))
+        #modified_arr = np.concatenate((modified_arr, null_arr))
+
+        modified_table.set_stageboard(
+            modified_arr
+        )
+        
+
+        self.add(modified_table)
+        self.wait(3)
+
+        # begin with 0
+        red_cells_arr = [
+            [6, 7], [6, 8],
+            [7, 7], [7, 9],
+            [8, 9], 
+            [9, 9], [9, 10], 
+        ]
+
+        blue_cells_arr = [
+            [8, 12], [8, 13],
+            [9, 11], [9, 13],
+            [10, 11], 
+            [11, 10], [11, 11]
+        ]
+        anim_list = []
+        
+        for i, j in red_cells_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color(YELLOW)
+            )
+
+        for i, j in blue_cells_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color(ORANGE)
+            )
+        
+        anim_group = AnimationGroup(*anim_list)
+
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{pifont}")
+
+        tick = Tex(r"\ding{51}", color = GREEN, tex_template = myTemplate).scale(0.8) # svg
+        cross = Tex(r"\ding{55}", color = RED, tex_template = myTemplate).scale(0.8) # svg
+
+        cross_vg = VGroup(
+            cross.copy().move_to(modified_table.get_cell_center(9, 10)),
+            cross.copy().move_to(modified_table.get_cell_center(10, 11)),
+        )
+
+        tick_vg = VGroup(
+            tick.copy().move_to(modified_table.get_cell_center(8, 11)),
+            tick.copy().move_to(modified_table.get_cell_center(10, 9)),
+        )
+
+        self.play(anim_group)
+        self.wait(3)
+        self.play(FadeIn(tick_vg), FadeIn(cross_vg))
+        self.wait(2.5)
+
+        anim_list = []
+        for i, j in red_cells_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color(WHITE)
+            )
+
+        for i, j in blue_cells_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color(WHITE)
+            )
+
+        self.play(
+            FadeOut(VGroup(cross_vg, tick_vg)),
+            AnimationGroup(*anim_list)
+        )
+        self.wait(3)
+
+        anim_list = []
+        useful_cells_arr = [
+            [6, 7], [6, 8],
+            [7, 7],
+            [8, 12], [8, 13],
+            [9, 13],
+        ]
+        for i, j in useful_cells_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color("#8A2BE2")
+            )
+        self.play(AnimationGroup(*anim_list))
+
+        not_useful_arr = [
+            [9, 9], [9, 10], 
+            [11, 10], [11, 11]
+        ]
+
+        for i, j in not_useful_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color(GREY)
+            )
+        self.play(AnimationGroup(*anim_list))
+
+        new_cells_arr = [
+            [9, 9], [10, 9], [11, 9],
+            [11, 11], [12, 10],
+            [10, 6], [10, 7],
+            [11, 6], [11, 7]
+        ]
+
+        anim_list = []
+        for i, j in new_cells_arr:
+            anim_list.append(
+                modified_table.get_cell(i + 1, j + 1).animate.set_color(WHITE)
+            )
+        self.play(AnimationGroup(*anim_list))
+        self.wait(3)
