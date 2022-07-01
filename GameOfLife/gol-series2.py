@@ -277,18 +277,27 @@ class ThreeStructures(Scene):
         spaceship_text = MyText("飞船").next_to(spaceship, DOWN)
         still_text.align_to(oscil_text, DOWN)
 
+        reminder_text = MyText("*在上期视频我们把静物称为稳定结构").scale(0.4).to_corner(UR)
         self.play(Create(vg))
 
-        self.play(
-            FadeIn(still_text, shift = UP),
-            FadeIn(oscil_text, shift = UP),
-            FadeIn(spaceship_text, shift = UP)
-        )
+        self.play(FadeIn(still_text, shift = UP), FadeIn(reminder_text))
+        self.play(FadeIn(oscil_text, shift = UP))
+        self.play(FadeIn(spaceship_text, shift = UP))
         self.wait(2)
-        for _ in range(17):
+        for _ in range(15):
             oscil.step()
+            self.wait(0.15)
+        self.wait(2)
+        arrow = Arrow(
+            spaceship.get_cell_center(2, 2),
+            spaceship.get_cell_center(7, 7),
+            color = "#8A2BE2",
+            stroke_width = 10
+        )
+        self.play(GrowArrow(arrow))
+        for i in range(20):
             spaceship.step()
-            self.wait(0.6)
+            self.wait(0.2)
         self.wait(2)
 
         """
@@ -306,6 +315,40 @@ class ThreeStructures(Scene):
             self.wait(0.15)
         self.wait(3)
         """
+"""
+我们会在接下来的几集会更加详细的介绍以上结构的性质（BulletedList），
+而这期我们会介绍静物的枚举，构造，和用途，那，让我们开始吧！
+"""
+class FollowingSeries(Scene):
+    def construct(self):
+        list = VGroup(
+            MyText("第一集：生命游戏介绍"),
+            MyText("第二集：静物的枚举，构造与用途"),
+            MyText("第三集：振荡器的构造，性质与用途"),
+            MyText("第四集：飞船的构造，性质与用途"),
+            EngText("...")
+        ).arrange_in_grid(5, 1)
+        list.set_color(YELLOW)
+        for i in range(5):
+            if i == 1:
+                continue
+            list[i].align_to(list[1], LEFT)
+        list[4].shift(0.2 * DOWN)
+        list.shift(0.3 * RIGHT)
+
+        dots = VGroup()
+        for i in range(5):
+            dots.add(
+                Dot(color = YELLOW).scale(2).next_to(list[i], LEFT)
+            )
+        self.add(list, dots)
+        self.wait(3)
+
+        self.play(
+            VGroup(list[0],list[2],list[3],list[4]).animate.set_opacity(0.2),
+            VGroup(dots[0],dots[2],dots[3],dots[4]).animate.set_opacity(0.2)
+        )
+        self.wait(5)
 
 # 在上一期视频中我们只展示了几个静物，但是还有非常多的静物没有展示出来
 class DisplayStill(Scene):
@@ -1463,11 +1506,21 @@ class AnotherInductionCoil(Scene):
 """
 class FiniteStill(Scene):
     def construct(self):
-        text = MyText("静物的构造", color = YELLOW).scale(1.3).to_edge(UP)
-        dl   = doubleLine(text).stretch_to_fit_width(16)
-        dl[1].shift(0.05 * UP)
-        
-        self.add(text, dl)
+        text = MyText("静物的构造 - 无限细胞", color = YELLOW).scale(1.5)
+        self.play(Write(text))
+
+        dl = doubleLine(text)
+        self.play(Create(dl), run_time = 0.5)
+        self.wait(2)
+
+        text.target = MyText("静物的构造 - 无限细胞", color = YELLOW).scale(1.3).to_edge(UP)
+        dll = doubleLine(text.target).stretch_to_fit_width(16)
+        dll[1].shift(0.05 * UP)
+        self.play(
+            MoveToTarget(text),
+            ReplacementTransform(dl, dll)
+        )
+
         #singleLife1 10 * 10
         #singleLife2 10 * 10
         #singleLife3 10 * 10
@@ -1493,8 +1546,8 @@ class FiniteStill(Scene):
         text2 = MyText("细胞数：12").scale(0.85).next_to(singleLife2, DOWN)
         text3 = MyText("细胞数：10").scale(0.85).next_to(singleLife3, DOWN)
 
-        self.add(life)
-        self.add(text1, text2, text3)
+        self.play(Create(life))
+        self.play(Write(text1), Write(text2), Write(text3))
         self.wait(5)
         
         black_rec = Rectangle(height = 5, width = 20, color = BLACK, fill_opacity = 0.8).to_edge(DOWN)
