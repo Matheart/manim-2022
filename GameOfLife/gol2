@@ -137,7 +137,7 @@ Rock
 ======== 结尾 ========
 这期视频就讲到这里，为方便大家在空闲时间自主的探索更多生命游戏有关的知识，
 在接下来每一集视频最后会放一个翻译对照表，方便大家对照中英版本的术语，
-另外在P2我都会放一个生命游戏有关的书籍/工具/论坛安利，
+另外在P2我都会安利一个生命游戏有关的书籍/工具 或者 论坛，
 像这集安利的就是我这个系列的参考书籍 Game of Life -- Construction and Mathematics
 大家如果有兴趣可以看看！
 
@@ -145,7 +145,7 @@ Rock
 我们下期视频再见！
 （记得三连！！！！！！！！
 
-======= 下期预告 ============
+======= 下期预览 ============
 scene 1: heavyweight volcano, Hebdarole
 scene 2: fountain, galaxy
 Scene 3: Beluchenko's other p37
@@ -155,21 +155,30 @@ Scene 4: p26 pre-pulsar shuttle
 （ps:在视频里为方便起见，有时使用英文原词有时使用中文翻译）
 两个page:
 术语
+cell 细胞
+generation 代
 still life 静物
 stable pattern 稳定结构
 Oscillator 振荡器
-generation 代
-strict still life 严格静物
+spaceship 飞船
 connected 连通
+strict still life 严格静物
 eater 吞噬者
 induction coil 感应线圈
 recovery time 恢复时间
-weld 焊接
+welded still life 焊接静物
 
 物体名称 
 glider 滑翔机
 beehive 蜂窝
 honey farm 蜂蜜农场
+boat 船
+snake 蛇
+zebra stripes 斑马条纹
+chicken wire 鸡栏网
+onion rings 洋葱圈
+leave 叶子
+
 ======== 资源推荐 ===========
 P2:
 给大家介绍一下我的参考书籍，这本书叫做《Conway's game of life -- Mathematics and construction》

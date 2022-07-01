@@ -2048,3 +2048,71 @@ class WeldedStill(Scene):
             )
         self.play(AnimationGroup(*anim_list))
         self.wait(3)
+
+# 在接下来每一集视频最后会放一个翻译对照表，方便大家对照中英版本的术语
+class TranslateAnim(Scene):
+    def construct(self):
+        """
+        eater 吞噬者
+        induction coil 感应线圈
+        welded still life 焊接静物
+        """
+        vg = VGroup(
+            EngText("eater", color = RED), MyText("吞噬者", color = BLUE),
+            EngText("induction coil", color = RED), MyText("感应线圈", color = BLUE),
+            EngText("welded still life", color = RED), MyText("焊接静物", color = BLUE),
+        ).arrange_in_grid(3, 2, buff = (2.5, MED_LARGE_BUFF))
+        # three arrows
+        #self.add(vg)
+        arrow1 = Arrow(LEFT, 1.2 * RIGHT, color = ORANGE).shift(1.25 * UP + 0.8* RIGHT)
+        arrow2 = Arrow(LEFT, 1.2 * RIGHT, color = ORANGE).shift(0.00* UP + 0.8 * RIGHT)
+        arrow3 = Arrow(LEFT, 1.2 * RIGHT, color = ORANGE).shift(1.25 * DOWN + 0.8 * RIGHT)
+        #self.add(arrow1, arrow2, arrow3)
+
+        self.play(AnimationGroup(*[
+            GrowFromCenter(
+                mob
+            )
+            for mob in vg
+        ]))
+        self.wait(1.5)
+        self.play(
+            GrowArrow(arrow1),
+            GrowArrow(arrow2),
+            GrowArrow(arrow3)
+        )
+        self.wait(2)
+        
+
+# 另外在P2我都会放一个生命游戏有关的书籍/工具/论坛安利
+class Anli(Scene):
+    def construct(self):
+        # three svgs pop up
+        book  = SVGMobject("assets/book.svg").shift(3.5 * LEFT)
+        tool  = SVGMobject("assets/tool.svg")
+        forum = SVGMobject("assets/forum.svg", color = WHITE).shift(3.5 * RIGHT)
+
+        self.play(
+            SpinInFromNothing(book),
+            SpinInFromNothing(tool),
+            SpinInFromNothing(forum)
+        )
+        self.wait(4)
+
+"""
+像这集安利的就是我这个系列的参考书籍 Game of Life -- Construction and Mathematics
+大家如果有兴趣可以看看！
+"""
+class AnliBook(Scene):
+    def construct(self):
+        pass
+        # 4 pages
+        # some animations like in PPT
+        # save_state()
+        # restore()
+"""
+三连动画
+"""
+class Sanlian(Scene):
+    def construct(self):
+        pass
