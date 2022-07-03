@@ -1,3 +1,4 @@
+from tkinter import Image
 from manim import *
 from gol import *
 
@@ -2105,8 +2106,28 @@ class Anli(Scene):
 """
 class AnliBook(Scene):
     def construct(self):
-        pass
-        # 4 pages
+        page_1 = ImageMobject("assets/conway_life_book/conway_life_book-1.png").scale(0.5)
+        page_2 = ImageMobject("assets/conway_life_book/conway_life_book-2.png").scale(0.5)
+        page_3 = ImageMobject("assets/conway_life_book/conway_life_book-3.png").scale(0.5)
+        page_4 = ImageMobject("assets/conway_life_book/conway_life_book-4.png").scale(0.5)
+        page_5 = ImageMobject("assets/conway_life_book/conway_life_book-5.png").scale(0.5)
+        page_1.z_index = 5
+        page_2.z_index = 4
+        page_3.z_index = 3
+        page_4.z_index = 2
+        page_5.z_index = 1
+        vg = Group(page_1, page_2, page_3, page_4, page_5)
+        
+        self.add(vg)
+        self.wait(2)
+        self.play(
+            page_1.animate.shift(4 * LEFT),
+            page_2.animate.shift(2.00 * LEFT),
+            page_3.animate.shift(0.0 * RIGHT),
+            page_4.animate.shift(2.0 * RIGHT),
+            page_5.animate.shift(4 * RIGHT)
+        )
+        self.wait(2)
         # some animations like in PPT
         # save_state()
         # restore()
@@ -2115,4 +2136,111 @@ class AnliBook(Scene):
 """
 class Sanlian(Scene):
     def construct(self):
-        pass
+        good = SVGMobject("assets/good.svg", color = WHITE).scale(1.1).shift(3.8 * LEFT)
+        coin = SVGMobject("assets/coin.svg", color = WHITE).scale(1.1)
+        favo = SVGMobject("assets/favo.svg", color = WHITE).scale(1.1).shift(3.8 * RIGHT)
+
+        self.play(
+            SpinInFromNothing(good),
+            SpinInFromNothing(coin),
+            SpinInFromNothing(favo)
+        )
+        circle_coin = Circle().scale(1.15).move_to(coin.get_center()).set_stroke(PINK, 10)
+        circle_favo = Circle().scale(1.25).move_to(favo.get_center()).set_stroke(PINK, 10).shift(0.1 * DOWN)
+        # color = "#FF69B4"
+
+        self.play(
+            good.animate.set_color("#FF69B4"),
+            Create(circle_coin),
+            Create(circle_favo)
+        )
+
+        self.play(
+            FadeOut(circle_coin),
+            FadeOut(circle_favo),
+            coin.animate.set_color("#FF69B4"),
+            favo.animate.set_color("#FF69B4"),
+            Flash(good, color = "#FF69B4", flash_radius = 1.5, line_length = 0.9, line_stroke_width = 7),
+            Flash(coin, color = "#FF69B4", flash_radius = 1.5, line_length = 0.9, line_stroke_width = 7),
+            Flash(favo, color = "#FF69B4", flash_radius = 1.5, line_length = 0.9, line_stroke_width = 7)
+        )
+        
+        self.wait(2)
+
+"""
+翻译对照表
+"""
+class TranslateTerm(Scene):
+    def construct(self):
+        text = MyText("中英对照表 - 术语", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        term_dict = {
+            "still life": "静物",
+            "stable pattern": "稳定结构",
+            "oscillator": "振荡器",
+            "spaceship": "飞船",
+            "connected": "连通",
+            "strict still life": "严格静物",
+            "eater": "吞噬者",
+            "induction coil": "感应线圈",
+            "recovery time": "恢复时间",
+            "welded still life": "焊接静物"
+        }
+        term = [EngText(key, color = ORANGE).scale(0.8) for key in term_dict.keys()]
+        term_vg = VGroup(*term).arrange_in_grid(5, 2, (3, 0.45)).shift(0.65 * DOWN + 0.8 * LEFT)
+        for i in [0,2,4,6]:
+            term_vg[i].align_to(term_vg[8], LEFT)
+        for i in [1,3,5,7]:
+            term_vg[i].align_to(term_vg[9], LEFT)
+        self.add(term_vg)
+
+        term_ch = [
+            MyText(val, color = RED_D).scale(0.8).next_to(term_vg[i], RIGHT) 
+            for i, val in enumerate(term_dict.values())
+        ]
+        term_ch_vg = VGroup(*term_ch)
+        self.add(term_ch_vg)
+        self.wait(5)
+        
+"""
+翻译对照表
+"""
+class TranslateObject(Scene):
+    def construct(self):
+        text = MyText("中英对照表 - 物体", color = YELLOW).scale(1.3).to_edge(UP)
+        dl   = doubleLine(text).stretch_to_fit_width(16)
+        dl[1].shift(0.05 * UP)
+        
+        self.add(text, dl)
+
+        term_dict = {
+            "glider": "滑翔机",
+            "block": "方块",
+            "beehive": "蜂窝",
+            "honey farm": "蜂蜜农场",
+            "boat": "船",
+            "snake": "蛇",
+            "zebra stripes": "斑马条纹",
+            "chicken wire": "鸡栏网",
+            "onion rings": "洋葱圈",
+            "leave": "叶子"
+        }
+        term = [EngText(key, color = ORANGE).scale(0.8) for key in term_dict.keys()]
+        term_vg = VGroup(*term).arrange_in_grid(5, 2, (3, 0.45)).shift(0.65 * DOWN + 0.8 * LEFT)
+        for i in [0,2,4,6]:
+            term_vg[i].align_to(term_vg[8], LEFT)
+        for i in [1,3,5,7]:
+            term_vg[i].align_to(term_vg[9], LEFT)
+        self.add(term_vg)
+
+        term_ch = [
+            MyText(val, color = RED_D).scale(0.8).next_to(term_vg[i], RIGHT) 
+            for i, val in enumerate(term_dict.values())
+        ]
+        term_ch_vg = VGroup(*term_ch)
+        self.add(term_ch_vg)
+        self.wait(5)
