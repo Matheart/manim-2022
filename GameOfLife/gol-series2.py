@@ -1,3 +1,4 @@
+from random import shuffle
 from tkinter import Image
 from manim import *
 from gol import *
@@ -2244,3 +2245,101 @@ class TranslateObject(Scene):
         term_ch_vg = VGroup(*term_ch)
         self.add(term_ch_vg)
         self.wait(5)
+
+class NextViewOne(Scene):
+    def construct(self):
+        text = MyText("下期预览", color = YELLOW).to_corner(UL)
+        self.add(text)
+
+        volcano = CellBoard(
+            dimension = (17, 24),
+            side_length = 0.21
+        ).shift(3.5 * LEFT + 0.4 * DOWN)
+        volcano.set_stageboard_by_rle("assets/heavyweightvolcano.rle")
+
+        hebdarole = CellBoard(
+            dimension = (20, 24),
+            side_length = 0.21
+        ).shift(3.5 * RIGHT + 0.4 * DOWN)
+        hebdarole.set_stageboard(
+            np.concatenate(
+                [np.zeros((2, 24)),
+                expand_rle("assets/hebdarole.rle")],
+                axis = 0
+            )
+        )
+
+        self.add(volcano, hebdarole)
+        
+        for _ in range(30):
+            volcano.step()
+            hebdarole.step()
+            self.wait(0.15)
+        
+
+class NextViewTwo(Scene):
+    def construct(self):
+        text = MyText("下期预览", color = YELLOW).to_corner(UL)
+        self.add(text)
+
+        fountain = CellBoard(
+            dimension = (15, 19),
+            side_length = 0.28
+        ).shift(3.1 * LEFT + 0.4 * DOWN)
+        fountain.set_stageboard_by_rle("assets/fountain.rle")
+
+        galaxy = CellBoard(
+            dimension = (13, 13),
+            side_length = 0.35
+        ).shift(3.9 * RIGHT + 0.4 * DOWN)
+        galaxy.set_stageboard(
+            np.pad(
+                expand_rle("assets/koksgalaxy.rle"),
+                ((2, 2), (2, 2))
+            )
+        )
+
+        fountain.scale_to_fit_height(galaxy.height)
+
+        self.add(fountain, galaxy)
+        
+        for _ in range(30):
+            fountain.step()
+            galaxy.step()
+            self.wait(0.15)
+
+class NextViewThree(Scene):
+    def construct(self):
+        text = MyText("下期预览", color = YELLOW).to_corner(UL)
+        self.add(text)
+
+        p37 = CellBoard(
+            dimension = (47, 47),
+            side_length = 0.1
+        ).shift(0.4 * DOWN)
+        p37.set_stageboard(
+            expand_rle("assets/132p37.rle")
+        )
+        self.add(p37)
+        
+        for _ in range(37):
+            p37.step()
+            self.wait(0.12)
+        
+
+class NextViewFour(Scene):
+    def construct(self):
+        text = MyText("下期预览", color = YELLOW).to_corner(UL)
+        self.add(text)
+
+        shuttle = CellBoard(
+            dimension = (37, 37),
+            side_length = 0.12
+        ).shift(0.4 * DOWN)
+        shuttle.set_stageboard_by_rle("assets/prepulsarshuttle26.rle")
+
+        self.add(shuttle)
+
+        for _ in range(26):
+            shuttle.step()
+            self.wait(0.12)
