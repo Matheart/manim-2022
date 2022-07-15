@@ -1242,6 +1242,11 @@ class StillBlock(Scene):
             FadeOut(rec1), FadeOut(tick1),
             FadeIn(rec2), FadeIn(tick2)
         )
+        self.wait(1.5)
+        self.play(
+            FadeOut(rec2), FadeOut(tick2)
+        )
+        self.wait(3)
  
         """
         self.wait(1)
@@ -1921,11 +1926,29 @@ class Eater3(Scene):
 """
 class WeldedStill(Scene):
     def construct(self):
+        """
         text = MyText("静物的用途 - 吞噬者", color = YELLOW).scale(1.3).to_edge(UP)
         dl   = doubleLine(text).stretch_to_fit_width(16)
         dl[1].shift(0.05 * UP)
         
         self.add(text, dl)
+        """
+        
+        text = MyText("静物的用途 - 焊接静物", color = YELLOW).scale(1.3)
+        self.play(Write(text))
+
+        dl = doubleLine(text)
+        self.play(Create(dl), run_time = 0.5)
+        self.wait(2)
+
+        text.target = MyText("静物的用途 - 焊接静物", color = YELLOW).scale(1.3).to_edge(UP)
+        dll = doubleLine(text.target).stretch_to_fit_width(16)
+        dll[1].shift(0.05 * UP)
+        self.play(
+            MoveToTarget(text),
+            ReplacementTransform(dl, dll)
+        )
+        self.wait(2)
 
         modified_table = CellBoard(
             dimension = (13, 21),

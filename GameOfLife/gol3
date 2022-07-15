@@ -1,0 +1,69 @@
+第三集：【生命游戏 ｜ 第三集】 振荡器
+技术问题：
+1. 当方格太多显示难看，FadeIn FadeOut难看
+2. updater （参考星空汤源码）
+
+大纲：
+1. 回顾定义
+2. 引入静子/动子，凤凰等
+3. simple search -> small object -> any systematic way?
+4. billiard table -> less regular shape -> enumerate (in golly)
+5. stabilizing corner (eater) to counter-reaction
+6. recall the simplest way -- period p, q, put it far away enough,
+then can create one with lcm(p, q) -> called trivial Oscillator! normally neglect
+7. composite period / spark
+8. types of sparkers (when introducing domino spark can intro what is domino)
+9. hasslers
+10. shuttles
+11. glider loops and reflecters
+12. Herschel Track
+
+====== 引入定子/动子，凤凰等 ====
+我们知道振荡器的定义就是每过一个周期就会恢复成原来的样子，（素材：pulsar）
+可以发现在振荡的过程中某些细胞一直保持生的状态，所以为方便称呼直接称它是定子(stator)，
+而其他细胞就被叫做动子(rotor); （素材：mold, spark coil, beacon）
+
+那么是否存在生命没有定子呢？答案是肯定的（statorless osciallator 无定子振荡器）
+如以上两个里面每个细胞在一个周期中都会有状态变更（Achim's P16, Kok's galaxy）
+
+另外，还存在生命有一个有趣的性质，
+就是它所有活着的细胞在每一代结束后都会死掉，但是又不是整体的死亡
+（素材：Phoenix 1）
+借凤凰死后浴火重生之意，我们把这种生命称为凤凰，
+爱好者证明了有限个细胞的凤凰最终都会演化成振荡器（凤凰振荡器）：
+（素材：爱心形状 + 几个零散的细胞）
+这种振荡器叫做凤凰振荡器，属于是无静子振荡器的一种；
+（FadeOut)
+
+======================= 一定的时间间隔
+（FadeIn）
+以上的内容虽然有趣，但远远没有接下来这个问题
+在振荡器相关的研究当中，omniperiodicity problem 算是最古老而且最多人研究的一个问题了，而它是指什么意思呢？
+omni-指全，全部，periodicity就是指周期；（hyper means high逃
+
+我们知道每个振荡器都有自己的周期，如xx周期为5，xx周期为7
+omnipriodicity problem就是指对于任意的周期n是否都存在着这个周期的振荡器（动画：一堆数字，下面物体，打勾）；
+目前周期为19，34，41的振荡器仍然没有被找到
+
+视频接下来的内容就是详细介绍爱好者们是如何构造各种周期的振荡器的，那就让我们开始吧！
+
+==========================================
+初步的探索是先使用暴力的电脑搜索，搜索出了一些比较小的振荡器，然而这方法仍然不够系统而且效率太低；
+
+稍后推出了一种更加系统化的方法： (billiard table)
+
+（初步，稍后这种用词不知道准不准确
+
+
+=========== 总结  ================
+
+=====================
+术语翻译表
+定子 stator
+动子 rotor
+无定子振荡器 statorless osciallator
+凤凰 phoneix
+台球桌 billiard table
+
+
+物体翻译表
